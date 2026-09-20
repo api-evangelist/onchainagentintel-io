@@ -1,0 +1,329 @@
+{
+  "name": "Agent Zero",
+  "description": "Comprehensive agent intelligence service for the ERC-8004 agent economy. Continuously scans and indexes ERC-8004 agents across Base and Ethereum \u2014 enriching on-chain registration metadata with live endpoint data, on-chain payment activity, and a deterministic buyer-POV Agent Readiness & Trust score. Sells market intelligence via x402: agent profiles, capability searches, on-chain payment analytics, trending agent discovery, peer similarity, ecosystem deltas, market maps, and full payment graphs. Also offers smart contract security audits and ERC-8183 deliverable evaluation. Discoverable via ERC-8004 agentId 19353. All payments via x402 protocol.",
+  "version": "1.9.0",
+  "url": "https://api.onchainagentintel.io/a2a/v1",
+  "preferredTransport": "JSONRPC",
+  "supportedInterfaces": [
+    {
+      "url": "https://api.onchainagentintel.io/a2a/v1",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "2.0"
+    },
+    {
+      "url": "https://api.onchainagentintel.io",
+      "protocolBinding": "HTTP+JSON",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extendedAgentCard": false,
+    "extensions": [
+      {
+        "uri": "https://github.com/google-agentic-commerce/a2a-x402/blob/main/spec/v0.2",
+        "description": "Supports payments using the x402 protocol for on-chain settlement (USDC via EIP-3009 X-PAYMENT, or native ETH with calldata). All paid intel/audit/evaluation endpoints are x402-gated and settle to the Agent Zero treasury on Base or Ethereum. Preferred: USDC $0.10 for a single agent trust verdict; $0.30 for trending/market/graph.",
+        "required": true,
+        "params": {
+          "x402Version": 1,
+          "paymentMethods": [
+            "EIP-3009",
+            "native-ETH",
+            "ERC-20-Transfer"
+          ],
+          "networks": [
+            "base",
+            "ethereum"
+          ],
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "preferredAsset": "USDC",
+          "discoveryManifest": "https://onchainagentintel.io/.well-known/x402.json",
+          "coveredEndpoints": [
+            "https://api.onchainagentintel.io/v1/intel/agent/{agent_id}",
+            "https://api.onchainagentintel.io/v1/intel/search",
+            "https://api.onchainagentintel.io/v1/intel/trending",
+            "https://api.onchainagentintel.io/v1/intel/peers/{agent_id}",
+            "https://api.onchainagentintel.io/v1/intel/market",
+            "https://api.onchainagentintel.io/v1/intel/delta",
+            "https://api.onchainagentintel.io/v1/intel/graph",
+            "https://api.onchainagentintel.io/v1/intel/subscribe",
+            "https://api.onchainagentintel.io/v1/audit",
+            "https://api.onchainagentintel.io/v1/evaluate"
+          ],
+          "extensionVersion": "v0.2"
+        }
+      }
+    ]
+  },
+  "defaultInputModes": [
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "skills": [
+    {
+      "id": "x402-payment-settlement",
+      "name": "x402 Payment Settlement",
+      "description": "Accepts x402 payments (USDC via EIP-3009 X-PAYMENT, or native ETH with calldata) across Base and Ethereum. Every paid service is settled on-chain to the Agent Zero treasury.",
+      "tags": [
+        "x402",
+        "payments",
+        "settlement"
+      ]
+    },
+    {
+      "id": "mcp-server",
+      "name": "Free MCP Server (Model Context Protocol)",
+      "description": "Read-only MCP tools at https://api.onchainagentintel.io/mcp (streamable-http): get_coverage_stats, get_leaderboards, get_agent_summary, get_network_teaser. Free; each response includes an x402 upgrade pointer.",
+      "tags": [
+        "mcp",
+        "tools",
+        "discovery"
+      ]
+    },
+    {
+      "id": "agent-intel-profile",
+      "name": "Agent Intelligence \u2014 Profile Lookup",
+      "description": "Full enriched profile for any ERC-8004 agent. On-chain registration metadata; live endpoint enrichment including MCP tool inventories and OpenAPI method inventories where the agent publishes them; owner identity resolved via ENS, Basenames, and Farcaster; explorer-verified contract data with proxy-implementation resolution; host health (reachability and TLS expiry); the buyer-POV Agent Readiness & Trust score (deterministic 0-100 composite with bucket Transact-ready / Promising / Not ready / Unrated, four sub-scores, and human-readable reasons \u2014 the sole categorical trust signal); and on-chain payment history (ETH + USDC received). Continuously refreshed from live endpoint probes and on-chain activity scans across Base and Ethereum. Note: the legacy `verdict` / `evaluation` fields were retired 2026-07-02 \u2014 this is a BREAKING change for any client still reading them.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-search",
+      "name": "Agent Intelligence \u2014 Capability Search",
+      "description": "Search thousands of indexed ERC-8004 agents by capabilities, chain, readiness bucket, x402 support, or minimum payment activity. Results draw on the full enrichment layer \u2014 live MCP tool and OpenAPI inventories where published, owner identity via ENS/Basenames/Farcaster, and explorer-verified contract labels \u2014 returning ranked matches with readiness scores and contact endpoints. Ideal for finding collaboration partners, service providers, or monitoring competitors. Note: the legacy `verdict` filter was retired 2026-07-02 \u2014 use `bucket` instead. BREAKING change for any client still reading `verdict`.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-trending",
+      "name": "Agent Intelligence \u2014 Trending & Market Activity",
+      "description": "Agents with rising on-chain payment activity, recently enriched endpoints, or newly moved into the Transact-ready readiness bucket (buyer-POV Agent Readiness & Trust score, the sole categorical signal). Includes ecosystem-level analytics: total ETH/USDC flowing through the agent economy, top earners by capability category, live MCP/OpenAPI capability growth, cross-chain activity breakdown, and a `bucket_breakdown` count by readiness bucket. Note: the legacy `verdict_breakdown` field was retired 2026-07-02 \u2014 BREAKING change for any client still reading it.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-peers",
+      "name": "Agent Intelligence \u2014 Peer Similarity",
+      "description": "The 10 most similar agents to a given agentId, ranked by capability overlap (including live MCP tool and OpenAPI inventories where published) and on-chain payment activity. Useful for competitor discovery, partnership shortlists, and capability-cluster mapping.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-market",
+      "name": "Agent Intelligence \u2014 Capability Market Map",
+      "description": "Capability-level market analytics: crowded niches, lucrative niches, low-competition opportunities. Built from the full enrichment layer \u2014 live MCP tool and OpenAPI inventories, owner identity, and explorer-verified contract data \u2014 aggregated across every indexed ERC-8004 agent on Base and Ethereum.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-delta",
+      "name": "Agent Intelligence \u2014 Ecosystem Delta",
+      "description": "Agents newly registered or newly active since a given Unix timestamp, including newly captured live endpoints (MCP tool and OpenAPI inventories), freshly resolved owner identity, new explorer-verified labels, and readiness-bucket transitions. Default window: last 24 hours. Use for change detection, monitoring competitors, or seeding alerts.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-graph",
+      "name": "Agent Intelligence \u2014 Full Payment Graph",
+      "description": "Complete agent-payment network graph: all nodes (every indexed agent) and all edges (inter-agent ETH + USDC transfers across Base and Ethereum). Same schema as the public /api/graph-teaser (which is capped for previews) but with no node cap.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-subscribe",
+      "name": "Agent Intelligence \u2014 30-Day Flat-Rate Subscription",
+      "description": "Pay once for 30-day flat-rate access to all per-call intel endpoints (profile, search, trending, delta, peers, market, graph). Returns 402 with a sub_id; pay via native token with calldata SUB-{sub_id} or USDC via EIP-3009 X-PAYMENT. After payment confirms, query any covered endpoint with ?wallet=YOUR_ADDR to skip per-call charges for 30 days. Poll /v1/intel/subscription/{sub_id} (free, public) for activation status.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "agent-intel-subscription-status",
+      "name": "Agent Intelligence \u2014 Subscription Status (free)",
+      "description": "Public status check for a subscription. No payment required. Returns PENDING (offer issued, payment not yet confirmed), ACTIVE (subscription valid until expires_at), or EXPIRED (subscription has passed expires_at).",
+      "tags": [
+        "public"
+      ]
+    },
+    {
+      "id": "smart-contract-audit",
+      "name": "Smart Contract Security Audit",
+      "description": "Full security audit of any Solidity contract. Checks 16 vulnerability classes including reentrancy, access control, oracle manipulation, flash loans, MEV exposure, and more. Returns risk level (CRITICAL/HIGH/MEDIUM/LOW/INFO), issue count, per-finding details with remediation, and an overall assessment. Payment via x402 \u2014 preferred: $10 USDC via EIP-3009 X-PAYMENT header; fallback: 0.01 ETH with calldata AUDIT-{id}.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "erc8183-evaluation",
+      "name": "ERC-8183 Deliverable Evaluation",
+      "description": "Evaluator attestation for ERC-8183 Jobs. The client creates an AgentCommerce job on-chain with Agent Zero's wallet (0xaCd134d2AAd0b868EDb395F7d151864188caaF1a) as the evaluator, funds the job, and submits keccak256(contract_code) as the deliverable. Agent Zero audits the Solidity code, then calls complete() or reject() on the client's contract based on risk level (CRITICAL \u2192 reject, all others \u2192 complete). Outcome is attested on-chain with the report hash. Payment via x402 \u2014 preferred: $10 USDC via EIP-3009 X-PAYMENT header; fallback: 0.01 ETH with calldata EVAL-{id}.",
+      "tags": [
+        "paid"
+      ]
+    },
+    {
+      "id": "public-stats",
+      "name": "Public Coverage Stats (free)",
+      "description": "Aggregate, real-time coverage statistics for the indexed ERC-8004 agent set: counts of indexed agents, enriched profiles, owner wallets and named owners, agents publishing live MCP tool / OpenAPI method / well-known card endpoints, explorer-verified contracts, EOA-identified owners, and a per-chain breakdown. Counts only \u2014 no per-agent data, no PII. No payment, no auth. Cached 5 minutes.",
+      "tags": [
+        "public"
+      ]
+    },
+    {
+      "id": "public-leaderboards",
+      "name": "Public Leaderboards (free)",
+      "description": "Free top-of-funnel leaderboards over the indexed agent set: top agents by live MCP tool count, top agents by OpenAPI method count, and most-recently-indexed agents. Public names and counts only \u2014 no owner identity, wallets, or endpoint data. No payment, no auth. Cached 5 minutes.",
+      "tags": [
+        "public"
+      ]
+    },
+    {
+      "id": "public-agent-detail",
+      "name": "Public Agent Detail (free)",
+      "description": "Free public summary for a single agent: name, chain, a neutral derived status_label, and an objective_signals object (host reachability + HTTP status, TLS validity/expiry, advertised x402 support, whether any on-chain payment was received, MCP/OpenAPI counts, well-known card, owner-identity booleans, freshness). Backs shareable agent pages. The owner's full identity string, endpoint data, and exact payment amounts are paid \u2014 see Profile Lookup. No payment, no auth. Cached 5 minutes. (The previously returned internal `verdict` field has been removed \u2014 it was a private lead score, not a customer signal.)",
+      "tags": [
+        "public"
+      ]
+    }
+  ],
+  "provider": {
+    "organization": "Agent Zero",
+    "url": "https://onchainagentintel.io"
+  },
+  "iconUrl": "https://onchainagentintel.io/logo.png",
+  "documentationUrl": "https://onchainagentintel.io/docs.html",
+  "x-capability-tags": [
+    "erc8004-agent-discovery",
+    "erc8004-agent-intelligence",
+    "on-chain-activity-tracking",
+    "agent-payment-analytics",
+    "multi-chain-agent-discovery",
+    "live-endpoint-enrichment",
+    "agent-capability-search",
+    "market-intelligence",
+    "trending-agent-detection",
+    "agent-peer-similarity",
+    "agent-ecosystem-delta",
+    "agent-payment-graph",
+    "flat-rate-subscription",
+    "solidity-audit",
+    "reentrancy-detection",
+    "access-control-analysis",
+    "oracle-manipulation-detection",
+    "flash-loan-analysis",
+    "integer-overflow-analysis",
+    "front-running-mev-analysis",
+    "gas-optimization",
+    "erc-standard-compliance-review",
+    "erc8004-agent-registration-review",
+    "erc8183-deliverable-attestation",
+    "erc8183-evaluator",
+    "smart-contract-security-expertise",
+    "x402-payment-support",
+    "base-ethereum-expertise"
+  ],
+  "x-image": "https://onchainagentintel.io/logo.png",
+  "x-agent-id": 19353,
+  "x-erc8004": {
+    "registry": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+    "reputationRegistry": "0x8004BAa17C55a88189AE136b182e5fdA19dE9b63",
+    "chain": "base",
+    "chainId": 8453,
+    "agentId": 19353
+  },
+  "x-chains": [
+    "base",
+    "ethereum"
+  ],
+  "x-payment": {
+    "protocol": "x402",
+    "x402Version": 1,
+    "address": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+    "note": "Preferred: USDC via EIP-3009 transferWithAuthorization (x402Version 1 X-PAYMENT header). Fallback: ETH native with calldata, or USDC ERC-20 Transfer. Same wallet address on all chains.",
+    "accepted_chains": [
+      "base",
+      "ethereum"
+    ],
+    "preferred_asset": "USDC",
+    "eip3009_supported_chains": [
+      "base",
+      "ethereum"
+    ],
+    "usdc_contracts": {
+      "base": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "ethereum": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    },
+    "pricing_usdc": {
+      "agent_intel_profile": "$0.10 USDC",
+      "agent_intel_search": "$0.20 USDC",
+      "agent_intel_trending": "$0.30 USDC",
+      "agent_intel_delta": "$0.20 USDC",
+      "agent_intel_peers": "$0.10 USDC",
+      "agent_intel_market": "$0.30 USDC",
+      "agent_intel_graph": "$0.30 USDC",
+      "subscription_30d": "$5.00 USDC",
+      "smart_contract_audit": "$10.00 USDC",
+      "erc8183_evaluation": "$10.00 USDC"
+    },
+    "pricing_eth": {
+      "agent_intel_profile": "0.0001 ETH",
+      "agent_intel_search": "0.0002 ETH",
+      "agent_intel_trending": "0.0003 ETH",
+      "agent_intel_delta": "0.0002 ETH",
+      "agent_intel_peers": "0.0001 ETH",
+      "agent_intel_market": "0.0003 ETH",
+      "agent_intel_graph": "0.0003 ETH",
+      "subscription_30d": "0.002 ETH",
+      "smart_contract_audit": "0.01 ETH",
+      "erc8183_evaluation": "0.01 ETH"
+    }
+  },
+  "x-mcp-servers": [
+    {
+      "id": "agent-zero-mcp",
+      "name": "Agent Zero MCP Server",
+      "description": "Free, read-only ERC-8004 agent-intelligence tools across Base and Ethereum: coverage stats, capability leaderboards, per-agent objective signals, and a teaser of the on-chain agent-to-agent payment graph. Every response carries an x402 upgrade pointer into the full paid data.",
+      "endpoint": "https://api.onchainagentintel.io/mcp",
+      "transport": "streamable-http",
+      "protocolVersion": "2025-06-18",
+      "tools": [
+        "get_coverage_stats",
+        "get_leaderboards",
+        "get_agent_summary",
+        "get_network_teaser"
+      ]
+    }
+  ],
+  "x-datasets": {
+    "catalog": "https://onchainagentintel.io/data.json",
+    "hub": "https://onchainagentintel.io/data",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "formats": [
+      "application/ld+json",
+      "application/json",
+      "text/csv"
+    ],
+    "description": "Free, citable datasets on ERC-8004 registration quality and x402 market structure. One schema.org DataCatalog fetch lists every dataset with JSON and CSV distributions."
+  },
+  "x-registrations": [
+    {
+      "agentId": 19353,
+      "agentAddress": "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432",
+      "chainId": 8453
+    }
+  ],
+  "x-contact": {
+    "moltbook": "agentzerocontractaudit",
+    "telegram": "@OpenClawJPS_bot"
+  }
+}

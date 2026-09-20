@@ -1,0 +1,53 @@
+{
+  "tools": [
+    {
+      "name": "get_coverage_stats",
+      "description": "Live coverage of the ERC-8004 agent economy across Base and Ethereum.\n\nReturns counts only: how many agents are indexed, how many expose a live MCP server / OpenAPI / well-known card, total MCP tools and OpenAPI methods observed, contracts verified, EOAs and owners identified, plus a per-chain breakdown. No names, addresses, or handles. Use this to size the market and see where capability density is growing.\n\nPaid counterpart: `GET /v1/intel/market` (x402, USDC on base-mainnet) returns the full capability market map — which capabilities are saturated vs open, per-capability agent lists, and momentum. Every response from this free tool carries an `unlock` block with the exact paid endpoint, price, and payment discovery.",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_coverage_statsArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_leaderboards",
+      "description": "Top ERC-8004 agents by live capability, plus the most recently indexed.\n\nThree ranked lists — top by live MCP tool count, top by OpenAPI method count, and most-recently indexed — each with agent_id, chain, public name, a shareable detail URL, and the relevant count. Names and counts only: no owner wallets, handles, or endpoint URLs. Use this to find the most capable / most active agents to integrate or watch.\n\nPaid counterpart: `GET /v1/intel/trending` (x402, USDC on base-mainnet) returns trending intel — top earners, fastest-rising agents, and integration candidates ranked with the signals behind the ranking. Every response from this free tool carries an `unlock` block with the exact paid endpoint, price, and payment discovery.",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_leaderboardsArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_agent_summary",
+      "description": "Objective, counts-only signals for one ERC-8004 agent.\n\nArgs:\n    chain: one of \"base\", \"ethereum\".\n    agent_id: the numeric ERC-8004 agent id.\n\nReturns reachability, TLS validity, x402 support, payments-received (boolean only), MCP tool count, OpenAPI method count, well-known presence, owner-named (boolean), and a neutral status label (Live & monetized / Live, no payments / Stub or unreachable). No owner identity string and no payment amounts — those are paid. Returns an `error` field if the agent is not indexed. Use this to vet a counterparty agent before transacting.\n\nPaid counterpart: `GET /v1/intel/agent/{agent_id}?chain={chain}` (x402, USDC on base-mainnet) unlocks trust_verdict (safe_to_transact / caution / avoid / insufficient_data), readiness_score, Sybil-adjusted reputation, and the commerce-backed breakdown — the decision-driving values this free response returns as `null` inside a `locked` map. Every response carries an `unlock` block with the exact paid endpoint, price, and payment discovery.",
+      "inputSchema": {
+        "properties": {
+          "chain": {
+            "title": "Chain",
+            "type": "string"
+          },
+          "agent_id": {
+            "title": "Agent Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "chain",
+          "agent_id"
+        ],
+        "title": "get_agent_summaryArguments",
+        "type": "object"
+      }
+    },
+    {
+      "name": "get_network_teaser",
+      "description": "A capped teaser of the on-chain agent-to-agent payment graph.\n\nReturns connected agents (nodes) and the value flowing between them (edges), capped to a small connected sample (≤200 nodes). This is a truncated preview, not the full network. Use it to see who pays whom in the agent economy.\n\nPaid counterpart: `GET /v1/intel/graph` (x402, USDC on base-mainnet) returns the full agent-to-agent payment graph — every node and edge with USDC/ETH amounts and no node cap. Every response from this free tool carries an `unlock` block with the exact paid endpoint, price, and payment discovery.",
+      "inputSchema": {
+        "properties": {},
+        "title": "get_network_teaserArguments",
+        "type": "object"
+      }
+    }
+  ]
+}

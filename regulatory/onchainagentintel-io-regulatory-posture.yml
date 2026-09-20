@@ -1,0 +1,22 @@
+generated: '2026-09-19'
+method: probed
+probe: true
+source: >-
+  Hunted in this order: artifacts harvested this run (no security.txt, no trust center, lifecycle has no
+  support period), conventional paths probed live on onchainagentintel.io (/accessibility, /legal/subprocessors,
+  /privacy, /terms, /security, /transparency — every one returns the 56,441-byte homepage SPA shell, HTTP
+  200 text/html, byte-identical to /), the same paths on api.onchainagentintel.io (nginx 404), and the docs
+  site (no data-residency, export or age-assurance statements; the only stated policy content is the
+  CC BY 4.0 licence on the datasets and a "Proprietary" licence entry in /agent.json whose url is the
+  /terms SPA shell). No signal carries the required substance, so signals is empty — absence is the
+  measurement.
+signals: {}
+probes:
+- {url: https://onchainagentintel.io/accessibility, http_status: 200, note: SPA shell identical to homepage}
+- {url: https://onchainagentintel.io/legal/subprocessors, http_status: 200, note: SPA shell identical to homepage}
+- {url: https://onchainagentintel.io/privacy, http_status: 200, note: SPA shell identical to homepage}
+- {url: https://onchainagentintel.io/terms, http_status: 200, note: SPA shell identical to homepage}
+- {url: https://onchainagentintel.io/security, http_status: 200, note: SPA shell identical to homepage}
+- {url: https://onchainagentintel.io/.well-known/security.txt, http_status: 200, note: SPA shell, not a security.txt}
+- {url: https://api.onchainagentintel.io/.well-known/security.txt, http_status: 404}
+- {url: https://app.onchainagentintel.io/.well-known/security.txt, http_status: 404}

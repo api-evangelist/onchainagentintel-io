@@ -1,0 +1,86 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  The public OpenAPI declares no component schemas (paid bodies are typed additionalProperties: true), so
+  the graph is derived from path parameters and the documented response examples at
+  https://onchainagentintel.io/docs (public agent summary, paid profile, subscription, subscription status),
+  the /agent.json services[] pathSchema/querySchema/requestSchema fields, and the live /v1/public/stats and
+  402 bodies observed 2026-09-19. Field names are the provider's; cardinalities are inferred from them.
+docs: https://onchainagentintel.io/docs
+notation: relationships use has_one / has_many / belongs_to with the referencing field name; direction is from the entity that owns the reference.
+entities:
+- name: Agent
+  key: '(chain, agent_id)'
+  domain: registry
+  description: >-
+    An ERC-8004 registered agent (IdentityRegistry row) on Base or Ethereum; the unit every intel operation is about.
+- name: Chain
+  key: 'chain'
+  domain: registry
+  description: >-
+    base | ethereum — the settlement and registry network; /v1/public/chain/{chain} rolls agents up by it.
+- name: Capability
+  key: 'slug'
+  domain: registry
+  description: >-
+    A capability tag agents advertise; /v1/public/capability/{slug} lists agents matching it; /v1/intel/market analyses saturation per capability.
+- name: ObjectiveSignals
+  domain: measurement
+  description: >-
+    Per-agent observed booleans/counts (reachable, http_status, tls_valid, x402_supported, payments_received, mcp_tool_count, openapi_method_count, has_well_known, owner_named, owner_is_contract, owner_contract_verified, last_indexed_at, last_active_check).
+- name: ReadinessScore
+  domain: measurement
+  description: >-
+    Buyer-POV Agent Readiness & Trust composite 0-100 with bucket (Transact-ready | Promising | Not ready | Unrated) and subscores live / payable / reputable / active; status_label on the free summary.
+- name: Owner
+  domain: identity
+  description: >-
+    Resolved owner identity (ENS / Basename / Farcaster) and explorer label; paid field, exposed as owner_named boolean on the free summary.
+- name: PaymentActivity
+  domain: on-chain
+  description: >-
+    ETH + USDC received, tx counts; edges of the agent-to-agent payment graph (/v1/intel/graph, free teaser via MCP get_network_teaser).
+- name: CoverageStats
+  domain: measurement
+  description: >-
+    Ecosystem totals from /v1/public/stats (agents_indexed, live_agents_total, mcp_agents, openapi_agents, well_known_agents, readiness_buckets, per-chain breakdowns, generated_at).
+- name: Dataset
+  key: 'slug'
+  domain: publishing
+  description: >-
+    Citable CC BY 4.0 dataset descriptor from /v1/public/datasets/{slug}; catalogued as schema.org DataCatalog at /data.json.
+- name: PaymentChallenge
+  key: 'intel_id | sub_id | audit id | eval id'
+  domain: commerce
+  description: >-
+    The 402 body a paid operation returns — x402Version, accepts[], payment_options[], preview, expires_at (offer window).
+- name: PaymentOption
+  domain: commerce
+  description: >-
+    One accepts[]/payment_options[] entry — network, chain_id, token/asset, amount, payTo, payment_method (EIP-3009) or calldata prefix.
+- name: Subscription
+  key: 'sub_id'
+  domain: commerce
+  description: >-
+    30-day flat-rate entitlement — subscriber_addr, status PENDING | ACTIVE | EXPIRED, created_at, paid_at, expires_at, payment_tx, payment_chain; covers seven intel endpoints.
+- name: AuditReport
+  domain: security
+  description: >-
+    Output of POST /v1/audit — risk level, per-finding remediation across 16 vulnerability classes.
+- name: Evaluation
+  domain: security
+  description: >-
+    Output of POST /v1/evaluate — ERC-8183 evaluator attestation; complete() or reject() called on the client job contract with the report hash.
+relationships:
+- {from: Agent, to: Chain, type: belongs_to, via: 'chain'}
+- {from: Agent, to: Capability, type: has_many, via: 'capabilities[]'}
+- {from: Agent, to: ObjectiveSignals, type: has_one, via: 'objective_signals'}
+- {from: Agent, to: ReadinessScore, type: has_one, via: 'readiness / bucket / subscores'}
+- {from: Agent, to: Owner, type: belongs_to, via: 'owner_identity'}
+- {from: Agent, to: PaymentActivity, type: has_many, via: 'payments (graph edges)'}
+- {from: Agent, to: Agent, type: has_many, via: 'peers (capability overlap / co-ownership)'}
+- {from: CoverageStats, to: Chain, type: has_many, via: 'chains_breakdown / live_by_chain'}
+- {from: PaymentChallenge, to: PaymentOption, type: has_many, via: 'accepts[] / payment_options[]'}
+- {from: Subscription, to: PaymentChallenge, type: belongs_to, via: 'sub_id'}
+- {from: Subscription, to: Owner, type: belongs_to, via: 'subscriber_addr (payer wallet)'}
+- {from: Dataset, to: CoverageStats, type: belongs_to, via: 'live-source-of-truth pointer'}

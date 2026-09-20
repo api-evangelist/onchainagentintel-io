@@ -1,0 +1,34 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://onchainagentintel.io/docs, https://api.onchainagentintel.io/agent.json (service descriptions
+  carry dated breaking-change notes), openapi info.version, MCP initialize serverInfo, and probes of
+  /status and /changelog on the primary host (both return the homepage SPA shell — no status page and no
+  changelog page exist). No deprecated operations are flagged in the OpenAPI.
+versioning:
+  scheme: URL path prefix (/v1) plus a semantic manifest version
+  current: 1.9.0
+  mechanism: >-
+    info.version "1.9.0" mirrors the ERC-8004 tokenURI manifest and /agent.json version; the MCP server
+    reports serverInfo version 1.8.0 separately. No version header; no per-request version pinning.
+  docs: https://onchainagentintel.io/docs
+deprecation:
+  policy_url: null
+  changelog: changelog/onchainagentintel-io-changelog.yml
+  sunset_header: false
+  notes: >-
+    No published deprecation policy. The one recorded removal — the `verdict` / `evaluation` fields and the
+    `verdict` search filter, retired 2026-07-02 — is announced inside the /agent.json service descriptions
+    and flagged there as "a BREAKING change for any client still reading them"; the docs page also notes the
+    public agent endpoint's `verdict` field was removed in favour of `status_label`. No RFC 8594
+    Deprecation/Sunset headers.
+deprecated_operations: []
+sla:
+  url: null
+  public_uptime_target: null
+  notes: No SLA published. Public endpoints are cached 5 minutes (cache-control public, max-age=300).
+status_page: null
+status_page_probe: {url: https://onchainagentintel.io/status, http_status: 200, note: homepage SPA shell, not a status page}
+rate_limits: rate-limits/onchainagentintel-io-rate-limits.yml
+freshness:
+  note: Coverage numbers are recomputed continuously; /v1/public/stats carries generated_at, and the site states "refreshed every 15 minutes". Liveness tracking begins 2026-07-17; registration history reaches back to 2026-03-12 (llms.txt).

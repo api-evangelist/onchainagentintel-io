@@ -1,23 +1,199 @@
 aid: onchainagentintel-io
 name: Agent Zero
-description: 'Agent Zero is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Agent Zero (On-Chain Agent Intel, onchainagentintel.io) is an agent-native intelligence service for the
+  ERC-8004 agent economy: it continuously indexes the ERC-8004 agents registered on Base and Ethereum, probes
+  their advertised MCP, OpenAPI and .well-known endpoints for liveness, joins on-chain payment activity and
+  ReputationRegistry rows, and scores each agent for buyer-POV readiness and trust. The intelligence is sold
+  per call over the x402 protocol (USDC via EIP-3009 or native ETH, no accounts, no API keys) through a
+  25-operation OpenAPI 3.1 REST API at https://api.onchainagentintel.io, a free anonymous remote MCP server at
+  /mcp, an A2A agent card at /.well-known/agent-card.json, an x402 Bazaar discovery manifest, an llms.txt and
+  a published Agent Skill. It also sells Solidity security audits and ERC-8183 deliverable evaluations, and
+  is itself ERC-8004 agentId 19353 on Base.
 url: https://raw.githubusercontent.com/api-evangelist/onchainagentintel-io/refs/heads/main/apis.yml
+image: https://onchainagentintel.io/logo.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
-- Company
-apis: []
+- Agents
+- Agent Intelligence
+- ERC-8004
+- x402
+- Agent Commerce
+- Blockchain
+- Ethereum
+- Base
+- Web3
+- MCP
+- A2A
+- Smart Contracts
+- Security Audits
+- agent-native
+tags_raw:
+- Agents
+- Agent intelligence
+- ERC-8004
+- x402
+- Agent commerce
+- Blockchain
+- Ethereum
+- Base
+- Web3
+- MCP
+- A2A
+- Smart contracts
+- Security audits
+- Agent-native
+apis:
+- aid: onchainagentintel-io:agent-zero-erc-8004-agent-intelligence-api
+  name: Agent Zero ERC-8004 Agent Intelligence API
+  description: >-
+    REST API for ERC-8004 agent intelligence on Base and Ethereum. Free public operations (coverage stats,
+    leaderboards, per-agent objective signals, capability and chain roll-ups, citable datasets, an embeddable
+    readiness badge, and the discovery documents) answer without payment; the paid x402 operations — agent
+    profile, capability search, trending, peers, market map, ecosystem delta, full payment graph, a 30-day
+    flat-rate subscription, Solidity security audit and ERC-8183 evaluation — return HTTP 402 with a free
+    counts-only preview and settle in USDC (EIP-3009 X-PAYMENT) or native ETH. 25 operations, OpenAPI 3.1.0
+    published at https://api.onchainagentintel.io/v1/public/openapi.json with servers[]
+    https://api.onchainagentintel.io; Redoc at /v1/public/docs.
+  humanURL: https://onchainagentintel.io/docs
+  baseURL: https://api.onchainagentintel.io
+  tags:
+  - Agents
+  - Agent Intelligence
+  - ERC-8004
+  - x402
+  - Smart Contracts
+  properties:
+  - type: OpenAPI
+    url: openapi/onchainagentintel-io-openapi.yml
+  - type: OpenAPI
+    name: OpenAPI (provider-hosted)
+    url: https://api.onchainagentintel.io/v1/public/openapi.json
+  - type: Documentation
+    url: https://onchainagentintel.io/docs
+  - type: APIReference
+    url: https://api.onchainagentintel.io/v1/public/docs
+  - type: GettingStarted
+    url: https://onchainagentintel.io/docs#quickstart
+  - type: Overlay
+    url: overlays/onchainagentintel-io-openapi-overlay.yaml
+  - type: Authentication
+    url: authentication/onchainagentintel-io-authentication.yml
+  - type: Conventions
+    url: conventions/onchainagentintel-io-conventions.yml
+  - type: Idempotency
+    url: conventions/onchainagentintel-io-conventions.yml
+  - type: ErrorCatalog
+    url: errors/onchainagentintel-io-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/onchainagentintel-io-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/onchainagentintel-io-changelog.yml
+  - type: Conformance
+    url: conformance/onchainagentintel-io-conformance.yml
+  - type: DataModel
+    url: data-model/onchainagentintel-io-data-model.yml
+  - type: Components
+    url: components/onchainagentintel-io-components.yml
+  - type: Plans
+    url: plans/onchainagentintel-io-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/onchainagentintel-io-rate-limits.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+  - type: AgentSkill
+    name: Provider-published SKILL.md
+    url: https://onchainagentintel.io/.agents/skills/onchain-agent-intel/SKILL.md
+- aid: onchainagentintel-io:agent-zero-mcp-server
+  name: Agent Zero MCP Server
+  description: >-
+    Free, anonymous remote Model Context Protocol server at https://api.onchainagentintel.io/mcp (Streamable
+    HTTP, protocol version 2025-06-18, serverInfo agent-zero-intel 1.8.0). tools/list answers without
+    credentials with four read-only, counts-only tools — get_coverage_stats, get_leaderboards,
+    get_agent_summary and get_network_teaser — each carrying a real inputSchema and an upgrade pointer to the
+    paid x402 REST endpoint that returns the enriched data. prompts/list and resources/list return empty
+    arrays; a request without Accept text/event-stream is refused with 406.
+  humanURL: https://onchainagentintel.io/docs
+  baseURL: https://api.onchainagentintel.io/mcp
+  tags:
+  - MCP
+  - agent-native
+  - Agent Intelligence
+  properties:
+  - type: MCPServer
+    url: mcp/onchainagentintel-io-mcp.yml
+  - type: MCPServer
+    name: MCP endpoint (Streamable HTTP)
+    url: https://api.onchainagentintel.io/mcp
+  - type: ToolCrosswalk
+    url: mcp/onchainagentintel-io-tool-crosswalk.yml
+- aid: onchainagentintel-io:agent-zero-a2a-agent
+  name: Agent Zero A2A Agent
+  description: >-
+    Agent2Agent surface: an agent card served from https://onchainagentintel.io/.well-known/agent-card.json
+    (mirrored on www and api hosts) naming the JSON-RPC endpoint https://api.onchainagentintel.io/a2a/v1 and
+    sixteen skills — x402 settlement, the free MCP server, the nine paid intel services, smart-contract audit,
+    ERC-8183 evaluation and the free public surfaces — under a required a2a-x402 v0.2 payment extension settled
+    to a Safe on Base or Ethereum. The card carries capabilities as an object and skills as an array but no
+    top-level protocolVersion, so it grades flavored against A2A 1.0.0; the legacy /.well-known/agent.json
+    declares protocolVersion 0.3.0. Streaming and push notifications are declared unsupported.
+  humanURL: https://onchainagentintel.io/docs
+  baseURL: https://api.onchainagentintel.io/a2a/v1
+  tags:
+  - A2A
+  - agent-native
+  - x402
+  properties:
+  - type: AgentCard
+    url: a2a/onchainagentintel-io-a2a.yml
+  - type: AgentCard
+    name: A2A Agent Card (provider-hosted)
+    url: https://onchainagentintel.io/.well-known/agent-card.json
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/onchainagentintel-io-domain-security.yml
 - type: Website
   url: https://onchainagentintel.io/
+- type: Documentation
+  url: https://onchainagentintel.io/docs
+- type: APIReference
+  url: https://api.onchainagentintel.io/v1/public/docs
+- type: Pricing
+  url: https://onchainagentintel.io/services
+- type: Blog
+  url: https://onchainagentintel.io/blog
+- type: BlogRSS
+  url: https://onchainagentintel.io/feed.xml
+- type: Login
+  url: https://app.onchainagentintel.io/
+- type: AgentCard
+  url: a2a/onchainagentintel-io-a2a.yml
+- type: MCPServer
+  url: mcp/onchainagentintel-io-mcp.yml
+- type: WellKnown
+  url: well-known/onchainagentintel-io-well-known.yml
+- type: LLMsTxt
+  url: llms/onchainagentintel-io-llms.txt
+- type: LLMsTxt
+  name: llms.txt (provider-hosted)
+  url: https://onchainagentintel.io/llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Conformance
+  url: conformance/onchainagentintel-io-conformance.yml
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 23
+  pass: local-v3

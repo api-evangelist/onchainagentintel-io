@@ -1,0 +1,278 @@
+{
+  "x402Version": 1,
+  "resources": [
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/agent_profile",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "100000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/agent_profile",
+          "description": "Paid ERC-8004 agent intelligence (agent_profile): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "100000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/agent_profile",
+          "description": "Paid ERC-8004 agent intelligence (agent_profile): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/search",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "200000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/search",
+          "description": "Paid ERC-8004 agent intelligence (search): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "200000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/search",
+          "description": "Paid ERC-8004 agent intelligence (search): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/trending",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/trending",
+          "description": "Paid ERC-8004 agent intelligence (trending): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/trending",
+          "description": "Paid ERC-8004 agent intelligence (trending): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/delta",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "200000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/delta",
+          "description": "Paid ERC-8004 agent intelligence (delta): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "200000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/delta",
+          "description": "Paid ERC-8004 agent intelligence (delta): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/peers",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "100000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/peers",
+          "description": "Paid ERC-8004 agent intelligence (peers): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "100000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/peers",
+          "description": "Paid ERC-8004 agent intelligence (peers): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/market",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/market",
+          "description": "Paid ERC-8004 agent intelligence (market): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/market",
+          "description": "Paid ERC-8004 agent intelligence (market): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    },
+    {
+      "resource": "https://api.onchainagentintel.io/v1/intel/graph",
+      "type": "http",
+      "lastUpdated": "2026-08-13T05:20:09Z",
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/graph",
+          "description": "Paid ERC-8004 agent intelligence (graph): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        },
+        {
+          "scheme": "exact",
+          "network": "ethereum-mainnet",
+          "maxAmountRequired": "300000",
+          "payTo": "0xaCd134d2AAd0b868EDb395F7d151864188caaF1a",
+          "asset": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "maxTimeoutSeconds": 300,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2",
+            "decimals": 6
+          },
+          "resource": "https://api.onchainagentintel.io/v1/intel/graph",
+          "description": "Paid ERC-8004 agent intelligence (graph): trust verdict, reputation, and commerce-backed signals for on-chain agents on Base + Ethereum.",
+          "mimeType": "application/json"
+        }
+      ]
+    }
+  ]
+}

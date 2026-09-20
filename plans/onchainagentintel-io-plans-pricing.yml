@@ -1,0 +1,80 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Agent Zero
+providerId: onchainagentintel-io
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: searched
+sources:
+- https://onchainagentintel.io/services
+- https://onchainagentintel.io/.well-known/x402.json
+- https://onchainagentintel.io/subscribe
+- https://app.onchainagentintel.io/app/pricing
+- https://app.onchainagentintel.io/app/dataset-licence
+tags:
+- Agents
+- x402
+- Blockchain
+description: >-
+  Three price surfaces, read 2026-09-19. (1) Per-call x402: every paid API operation has a fixed USDC price
+  (and a native-ETH fallback) published on the services page, in /.well-known/x402.json (maxAmountRequired
+  in 6-decimal USDC units) and in every 402 body — no account, no key. (2) A machine-facing 30-day flat-rate
+  x402 subscription covering seven intel endpoints. (3) A human web plan, Pro at $19/mo via Stripe with guest
+  checkout, plus an enquiry-led institutional dataset licence with no listed price. Prices may change; the
+  provider tells clients to read accepts[] live rather than hardcode.
+plan_count: 4
+plans:
+- id: free
+  name: Free
+  type: free
+  price: 0
+  currency: USD
+  description: Public endpoints (stats, leaderboards, per-agent summary, capability, chain, datasets, badge), the free MCP server, and the counts-only 402 preview on every paid endpoint.
+  elements:
+  - name: GET /v1/public/* — no payment, no key, cached 5 minutes
+  - name: MCP server at https://api.onchainagentintel.io/mcp (4 tools)
+  - name: 402 preview envelope on every paid endpoint
+- id: x402-per-call
+  name: Per-call x402
+  type: usage-based
+  currency: USDC
+  billing: per request, settled on-chain (Base or Ethereum) via EIP-3009 X-PAYMENT or native ETH
+  entries:
+  - {label: Agent profile lookup, name: agent_profile, operation: paid_agent_intel_profile_get, price: 0.10 USDC, price_eth: 0.0001 ETH}
+  - {label: Peer agents, name: peers, operation: paid_agent_intel_peers_get, price: 0.10 USDC, price_eth: 0.0001 ETH}
+  - {label: Capability search, name: search, operation: paid_agent_intel_search_post, price: 0.20 USDC, price_eth: 0.0002 ETH}
+  - {label: Activity delta, name: delta, operation: paid_agent_intel_delta_get, price: 0.20 USDC, price_eth: 0.0002 ETH}
+  - {label: Trending agents, name: trending, operation: paid_agent_intel_trending_get, price: 0.30 USDC, price_eth: 0.0003 ETH}
+  - {label: Market overview, name: market, operation: paid_agent_intel_market_get, price: 0.30 USDC, price_eth: 0.0003 ETH}
+  - {label: Full payment graph, name: graph, operation: paid_agent_intel_graph_get, price: 0.30 USDC, price_eth: 0.0003 ETH}
+  - {label: Smart contract security audit, name: audit, operation: paid_smart_contract_audit_post, price: 10.00 USDC, price_eth: 0.01 ETH}
+  - {label: ERC-8183 deliverable evaluation, name: evaluate, operation: paid_erc8183_evaluation_post, price: 10.00 USDC, price_eth: 0.01 ETH}
+  - {label: Subscription status, name: subscription_status, path: 'GET /v1/intel/subscription/{sub_id}', price: free}
+  limits: none published
+- id: x402-subscription-30d
+  name: 30-Day Subscription (x402)
+  type: flat-rate
+  price: 5.00
+  currency: USDC
+  price_eth: 0.002 ETH
+  billing: one x402 payment; 30 days from paid_at; offer window on the 402 is 15 minutes (docs example)
+  operation: paid_agent_intel_subscribe_post
+  description: Unlimited calls to the seven per-call intel endpoints (profile, search, trending, peers, delta, market, graph) for the paying wallet; pass wallet=<addr> on each call. Audit and evaluate are NOT included.
+  limits: none published ("unlimited")
+- id: pro
+  name: Pro
+  type: subscription
+  price: 19
+  currency: USD
+  billing: monthly via Stripe; guest checkout, cancel any time via Stripe
+  source: https://app.onchainagentintel.io/app/pricing
+  description: Human web plan — full per-agent profiles in-app, full leaderboard and interactive graph, the 2026-Q3 State of ERC-8004 report, and "API access to the same paid endpoints on api.onchainagentintel.io (x402 or subscription)".
+- id: dataset-licence
+  name: Dataset licence
+  type: enterprise
+  price: null
+  currency: USD
+  source: https://app.onchainagentintel.io/app/dataset-licence
+  description: Institutional licence to the underlying measurement store; enquiry-led, no listed price.

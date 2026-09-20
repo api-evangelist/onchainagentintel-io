@@ -1,0 +1,46 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Agent Zero ERC-8004 Agent Intelligence API
+  version: 1.0.0
+extends: openapi/onchainagentintel-io-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+x-source: openapi/onchainagentintel-io-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      catalog: https://apis.io/onchainagentintel-io
+      provider: Agent Zero
+      maintainer: Kin Lane <kin@apievangelist.com>
+      artifacts:
+      - apis.yml
+      - conformance/onchainagentintel-io-conformance.yml
+      - errors/onchainagentintel-io-problem-types.yml
+      - lifecycle/onchainagentintel-io-lifecycle.yml
+      - conventions/onchainagentintel-io-conventions.yml
+      - authentication/onchainagentintel-io-authentication.yml
+      - mcp/onchainagentintel-io-mcp.yml
+      - mcp/onchainagentintel-io-tool-crosswalk.yml
+      - a2a/onchainagentintel-io-a2a.yml
+      - well-known/onchainagentintel-io-x402.json
+      - plans/onchainagentintel-io-plans-pricing.yml
+- target: $.info
+  update:
+    x-provenance:
+      fetched: '2026-09-19'
+      url: https://api.onchainagentintel.io/v1/public/openapi.json
+      http_status: 200
+      note: Spec is served by the API host named in servers[]; info.contact.url and info.license.url both point at onchainagentintel.io.
+- target: $.tags[?(@.name=='paid-x402')]
+  update:
+    x-apievangelist-note: Every operation under this tag returns HTTP 402 first; the 402 body's accepts[] is the live price list. Settlement is on-chain and has no documented reversal.
+- target: $.paths['/v1/intel/subscribe'].post
+  update:
+    x-apievangelist-note: Status of a purchased subscription is polled at GET /v1/intel/subscription/{sub_id} (free; documented at https://onchainagentintel.io/docs but absent from this spec).
+- target: $.paths['/mcp'].post
+  update:
+    x-apievangelist-mcp: mcp/onchainagentintel-io-mcp.yml
+- target: $.paths['/.well-known/agent-card.json'].get
+  update:
+    x-apievangelist-a2a: a2a/onchainagentintel-io-a2a.yml

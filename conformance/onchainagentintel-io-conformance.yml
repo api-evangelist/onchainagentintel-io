@@ -1,0 +1,104 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Read from the contract (openapi/onchainagentintel-io-openapi.yml — components.securitySchemes.x402 with
+  its x-x402 extension, components.responses.PaymentRequired), the discovery documents fetched 2026-09-19
+  (/.well-known/x402.json, /.well-known/agent-card.json, /agent.json, /mcp initialize), and the provider's
+  docs at https://onchainagentintel.io/docs. Live probes: 402 on GET /v1/intel/agent/19353, 422/404 on the
+  public agent endpoint, 406 on GET /mcp. No certification or compliance programme is published, so no
+  Compliance pointer is emitted.
+standards:
+- id: x402
+  conforms: true
+  evidence: >-
+    components.securitySchemes.x402 (apiKey in header X-PAYMENT) carries x-x402 {version 1, settlement_networks
+    [base, ethereum], pay_to 0xaCd1…aF1a}; components.responses.PaymentRequired requires x402Version + accepts[]
+    (scheme exact, network, maxAmountRequired, payTo, asset, maxTimeoutSeconds, extra, resource); live GET
+    /v1/intel/agent/19353 returned 402 with that body and x-payment-* headers.
+- id: x402-bazaar-discovery-manifest
+  conforms: true
+  evidence: >-
+    https://onchainagentintel.io/.well-known/x402.json (200, application/json) lists every paid resource with accepts[] per network; saved at well-known/onchainagentintel-io-x402.json.
+- id: a2a-x402-extension
+  conforms: true
+  evidence: >-
+    agent-card capabilities.extensions[0].uri = https://github.com/google-agentic-commerce/a2a-x402/blob/main/spec/v0.2, required true, params.x402Version 1.
+- id: eip-3009
+  conforms: true
+  evidence: >-
+    Preferred payment method on every payment_options[] entry (agent.json services[]), securityScheme description and docs "USDC via EIP-3009" — transferWithAuthorization signed off-chain and carried in X-PAYMENT.
+- id: eip-712
+  conforms: true
+  evidence: >-
+    docs#usdc-eip3009 publishes the EIP-712 domain (USD Coin, version 2) and message shape used to sign the authorization; PaymentRequired.accepts[].extra carries {name, version, decimals}.
+- id: erc-8004
+  conforms: true
+  evidence: >-
+    Domain standard for the agent-registry market. The contract's info.description states it is "live-sourced from the
+    on-chain ERC-8004 tokenURI manifest for agentId 19353"; agent-card x-erc8004 names registry
+    0x8004A169FB4a3325136EB29fA0ceB6D2e539a432 on chainId 8453; /agent.json follows the ERC-8004 metadata
+    (services[], registrations[]) shape; /.well-known/agents.json lists the registration.
+- id: erc-8183
+  conforms: true
+  evidence: >-
+    POST /v1/evaluate (operationId paid_erc8183_evaluation_post) is an ERC-8183 AgentCommerce evaluator that calls complete()/reject() on the job contract (services page, Security Services table).
+- id: mcp
+  conforms: true
+  evidence: >-
+    POST https://api.onchainagentintel.io/mcp — initialize returned protocolVersion 2025-06-18, serverInfo agent-zero-intel 1.8.0; tools/list returned 4 tools with inputSchema (mcp/onchainagentintel-io-mcp-tools.json).
+- id: a2a
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json is served but graded flavored against A2A 1.0.0 — no top-level protocolVersion
+    (only binding versions inside supportedInterfaces[]); the legacy /.well-known/agent.json declares protocolVersion
+    0.3.0 but carries capabilities as an array. See a2a/onchainagentintel-io-a2a.yml.
+- id: rfc8288-link-header
+  conforms: true
+  evidence: >-
+    components.responses.PaymentRequired.headers.Link — "RFC 8288 Link header (per-agent operations only)" with rel="alternate"; type="text/html" pointing at the free per-agent page.
+- id: openapi-3.1
+  conforms: true
+  evidence: >-
+    openapi "3.1.0", 25 operations, x-codeSamples (bash, Python, TypeScript) on paid_agent_intel_profile_get.
+- id: schema-org-datacatalog
+  conforms: true
+  evidence: >-
+    https://onchainagentintel.io/data.json (200, application/json) is a schema.org DataCatalog (@context https://schema.org, @type DataCatalog) named by agent-card x-datasets; datasets CC BY 4.0.
+- id: cors
+  conforms: true
+  evidence: >-
+    GET /v1/public/stats returned access-control-allow-origin "*" and access-control-allow-methods "GET, OPTIONS"; docs state the public endpoints are CORS-enabled.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No oauth2 securityScheme; /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource are 404 on api.onchainagentintel.io and an SPA shell on onchainagentintel.io. The docs state "No accounts or API keys required."
+- id: oidc
+  conforms: false
+  evidence: >-
+    No /.well-known/openid-configuration on any host (404 on the API host, SPA shell on the primary).
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are FastAPI-shaped {"detail": ...} (404 Subscription not found, 422 validation detail[]) and the x402 402 envelope; no application/problem+json.
+- id: idempotency
+  conforms: partial
+  evidence: >-
+    SKILL.md — "Payment is idempotent for the returned id" (the intel_id / sub_id / audit / eval id issued in the 402 challenge); no client-supplied Idempotency-Key header. See conventions idempotency.coverage.
+- id: pagination
+  conforms: false
+  evidence: >-
+    No pagination parameters in the spec; leaderboards and trending return fixed-size lists (docs: top 50 / 50 / 20).
+- id: rate-limit-headers
+  conforms: false
+  evidence: >-
+    No RateLimit-*/X-RateLimit-* or Retry-After on probed responses; limits undocumented.
+- id: webhooks
+  conforms: false
+  evidence: >-
+    Agent card capabilities.streaming false and pushNotifications false; no webhook or event surface documented.
+domain_standard:
+  market: ERC-8004 agent economy (on-chain agent registry intelligence)
+  declared: true
+  standards: [erc-8004, x402, eip-3009, erc-8183]
+  contract_location: >-
+    components.securitySchemes.x402.x-x402; info.description (ERC-8004 tokenURI manifest for agentId 19353)

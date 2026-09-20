@@ -1,0 +1,106 @@
+generated: '2026-09-19'
+method: probed
+source: https://onchainagentintel.io/.well-known/agent-card.json
+description: >-
+  A2A Agent Card observed at the canonical /.well-known/agent-card.json path on onchainagentintel.io
+  (the same 16,805-byte body is served on www.onchainagentintel.io and api.onchainagentintel.io).
+  Grade is measured against the A2A 1.0.0 AgentCard object: 'conformant' passes every structural check,
+  'near-conformant' is correctly shaped but omits optional fields, 'flavored' fails a hard check and is
+  an agent card in spirit rather than in schema. Provider-published by construction — served from the
+  provider's own host; nothing here is derived or generated. Verbatim body saved as
+  onchainagentintel-io-agent-card.json.
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: onchainagentintel.io
+  mirrors:
+  - https://www.onchainagentintel.io/.well-known/agent-card.json
+  - https://api.onchainagentintel.io/.well-known/agent-card.json
+  legacy:
+    path: /.well-known/agent.json
+    url: https://onchainagentintel.io/.well-known/agent.json
+    http_status: 200
+    note: >-
+      A DIFFERENT, pre-0.3-shaped document (14,177 bytes): declares protocolVersion 0.3.0 and the same
+      16 skills, but its capabilities field is an array of capability-tag strings rather than the
+      AgentCapabilities object, and its url is the website root rather than the JSON-RPC endpoint.
+      Not saved; the canonical path is graded.
+conformance:
+  spec: A2A 1.0.0
+  grade: flavored
+  protocol_version: null
+  preferred_transport: JSONRPC
+  checks:
+    capabilities_is_object: true
+    protocol_version_present: false
+    skills_is_array: true
+    preferred_transport_present: true
+    default_input_modes_present: true
+    default_output_modes_present: true
+  deviations:
+  - field: protocolVersion
+    issue: >-
+      Absent at the top level of the canonical card (hard check). supportedInterfaces[].protocolVersion
+      carries "2.0" for the JSONRPC binding and "1.0" for HTTP+JSON — binding versions, not the A2A
+      protocol version. The legacy /.well-known/agent.json copy does declare protocolVersion 0.3.0.
+  - field: supportedInterfaces
+    issue: >-
+      Uses supportedInterfaces[] with protocolBinding rather than the 0.3 additionalInterfaces[] with
+      transport; a client reading the 0.3 shape sees only url + preferredTransport.
+  - field: extensions
+    issue: >-
+      capabilities.extensions[0].uri points at the a2a-x402 v0.2 spec on GitHub (required: true) —
+      a payment extension every client must honour before any paid skill can be invoked.
+card:
+  name: Agent Zero
+  description: >-
+    Comprehensive agent intelligence service for the ERC-8004 agent economy: indexes ERC-8004 agents on
+    Base and Ethereum, enriches them with live endpoint probes and on-chain payment activity, scores
+    readiness and trust, and sells the intelligence per call over x402 (USDC via EIP-3009 or native ETH).
+    Also offers Solidity security audits and ERC-8183 deliverable evaluation.
+  url: https://api.onchainagentintel.io/a2a/v1
+  version: 1.9.0
+  provider: Agent Zero (https://onchainagentintel.io)
+  documentation_url: https://onchainagentintel.io/docs.html
+  icon_url: https://onchainagentintel.io/logo.png
+  streaming: false
+  push_notifications: false
+  skills: 16
+  skill_ids:
+  - x402-payment-settlement
+  - free MCP server (Model Context Protocol)
+  - agent intelligence — profile lookup / capability search / trending & market / peer similarity / market map / ecosystem delta / payment graph / 30-day subscription / subscription status
+  - smart contract security audit
+  - ERC-8183 deliverable evaluation
+  - public coverage stats / leaderboards / agent detail (free)
+  file: onchainagentintel-io-agent-card.json
+  extensions:
+  - uri: https://github.com/google-agentic-commerce/a2a-x402/blob/main/spec/v0.2
+    required: true
+    x402_version: 1
+    networks: [base, ethereum]
+    pay_to: '0xaCd134d2AAd0b868EDb395F7d151864188caaF1a'
+    discovery_manifest: https://onchainagentintel.io/.well-known/x402.json
+  x_mcp_servers:
+  - endpoint: https://api.onchainagentintel.io/mcp
+    transport: streamable-http
+    protocol_version: '2025-06-18'
+    tools: [get_coverage_stats, get_leaderboards, get_agent_summary, get_network_teaser]
+  x_erc8004:
+    chain: base
+    chain_id: 8453
+    agent_id: 19353
+    registry: '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432'
+endpoint_probe:
+  url: https://api.onchainagentintel.io/a2a/v1
+  method: GET
+  http_status: 405
+  body: '{"detail":"Method Not Allowed"}'
+  note: The JSON-RPC endpoint exists and rejects GET as expected; no A2A message was sent.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://onchainagentintel.io/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  bytes: 16805
+  note: Verbatim body saved alongside this manifest. No field inferred.

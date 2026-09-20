@@ -1,0 +1,124 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://onchainagentintel.io/docs (Quick Start, x402 Payment Flow, USDC via EIP-3009, Subscription,
+  Subscription Status), https://onchainagentintel.io/skill.md (payment idempotency, nonce rule),
+  https://onchainagentintel.io/services (payment methods), the OpenAPI at
+  https://api.onchainagentintel.io/v1/public/openapi.json, and live response headers observed 2026-09-19.
+description: >-
+  How the Agent Zero API behaves across every operation: an account-less, key-less REST surface where the
+  free /v1/public/* operations answer directly and every paid /v1/intel/*, /v1/audit and /v1/evaluate
+  operation answers 402 first and 200 after an x402 payment. These are the runtime semantics the OpenAPI
+  does not fully express.
+
+base_url: https://api.onchainagentintel.io
+api_style: REST over HTTPS, JSON requests and responses (FastAPI); JSON-RPC 2.0 over Streamable HTTP for /mcp and /a2a/v1
+
+authentication:
+  scheme: none for public operations; x402 payment proof for paid operations
+  header: X-PAYMENT (base64 x402 v1 payload carrying a signed EIP-3009 transferWithAuthorization) or X-PAYMENT-TX (native-ETH tx hash)
+  accounts: none — "No accounts or API keys required" (docs)
+  docs: https://onchainagentintel.io/docs#x402-flow
+  detail: authentication/onchainagentintel-io-authentication.yml
+
+idempotency:
+  supported: true
+  coverage: partial
+  mechanism: >-
+    Server-issued request id. Each 402 challenge mints an id (intel_id, sub_id, audit id, eval id) and the
+    provider states "Payment is idempotent for the returned id" — settling twice against one id does not
+    buy twice. On the payment leg the EIP-3009 authorization carries a client-generated 32-byte nonce
+    ("Use a fresh random nonce per request to prevent replay") and a 300-second validBefore window.
+  scope:
+  - paid_agent_intel_profile_get
+  - paid_agent_intel_search_post
+  - paid_agent_intel_trending_get
+  - paid_agent_intel_peers_get
+  - paid_agent_intel_market_get
+  - paid_agent_intel_delta_get
+  - paid_agent_intel_graph_get
+  - paid_agent_intel_subscribe_post
+  - paid_smart_contract_audit_post
+  - paid_erc8183_evaluation_post
+  key_format: server-issued short hex id (e.g. intel_id 2C8917EC) or sub_<hex>
+  retention: not stated
+  conflict_behavior: not stated
+  header: none — there is no client-supplied Idempotency-Key
+  docs: https://onchainagentintel.io/skill.md
+  note: >-
+    Graded partial rather than full because the guarantee is bound to a server-issued payment id rather
+    than a documented client key on every write, and its retention/conflict behaviour is unstated. The
+    free GET operations are inherently idempotent.
+
+reversibility:
+  status: none
+  write_surface:
+  - operation: paid_agent_intel_subscribe_post
+    effect: on-chain USDC/ETH settlement of $5.00 for a 30-day subscription
+    reversal: none documented
+    window: null
+  - operation: paid_smart_contract_audit_post
+    effect: on-chain settlement of $10.00; audit report returned
+    reversal: none documented
+    window: null
+  - operation: paid_erc8183_evaluation_post
+    effect: on-chain settlement of $10.00 AND the evaluator calls complete() or reject() on the client's ERC-8183 job contract — an irreversible on-chain state change
+    reversal: none documented
+    window: null
+  - operation: every per-call paid_agent_intel_* operation
+    effect: on-chain micro-settlement ($0.10–$0.30)
+    reversal: none documented
+    window: null
+  notes: >-
+    x402 settlements are on-chain transfers; the provider publishes no refund, cancel or void operation for
+    them and no window. The "cancel anytime via Stripe" language at https://app.onchainagentintel.io/app/pricing
+    applies to the separate $19/mo Pro web plan, not to the API's x402 surface. An agent should treat every
+    paid call as final before it signs.
+
+dry_run:
+  status: partial
+  mechanism: >-
+    Every paid operation can be called without payment and returns the 402 challenge with a free
+    counts-only `preview` of the paid body plus the exact price — a rehearsal of the request shape and cost,
+    but not of the paid output. Free twins exist for profile (GET /v1/public/agent/{chain}/{agent_id}),
+    market (GET /v1/public/stats) and trending (GET /v1/public/leaderboards).
+
+pagination:
+  style: none
+  notes: No limit/offset/cursor parameters in the spec; leaderboards return fixed top-50/top-50/recent-20 lists; /v1/intel/delta is windowed by a `since` Unix timestamp rather than paginated.
+
+field_expansion: none
+metadata: none
+
+request_id:
+  header: none observed
+  notes: The 402 body's intel_id / sub_id doubles as the correlation id for a paid request; no X-Request-Id on responses.
+
+versioning:
+  scheme: /v1 path prefix; manifest version 1.9.0 mirrored in info.version
+  header: none
+  detail: lifecycle/onchainagentintel-io-lifecycle.yml
+
+errors:
+  envelope: >-
+    {"detail": string | [ {type, loc, msg, input} ]} for 404/405/422; x402 envelope {x402Version,
+    accepts[], error "Payment Required", payment_options[], preview} for 402
+  problem_json: false
+  detail: errors/onchainagentintel-io-problem-types.yml
+
+rate_limits:
+  documented: false
+  headers: none observed (only cache-control public, max-age=300 on public endpoints)
+  detail: rate-limits/onchainagentintel-io-rate-limits.yml
+
+caching:
+  public_endpoints: 'cache-control public, max-age=300 (docs: "cached for 5 minutes")'
+  cors: access-control-allow-origin * on public endpoints
+
+payments:
+  protocol: x402 v1 (X-PAYMENT header); x402 v2 Bazaar discovery manifest at /.well-known/x402.json
+  preferred: USDC via EIP-3009 on Base (chainId 8453); also USDC on Ethereum (chainId 1); fallback native ETH with calldata prefix INTEL-/SUB-/AUDIT-/EVAL- and X-PAYMENT-TX
+  pay_to: '0xaCd134d2AAd0b868EDb395F7d151864188caaF1a'
+  timeout: maxTimeoutSeconds 300 per accepts[] entry
+  subscription: POST /v1/intel/subscribe ($5.00 / 30 days) then wallet=<addr> query param on covered calls; status at GET /v1/intel/subscription/{sub_id} (PENDING | ACTIVE | EXPIRED)
+  rule: prices may change — read accepts[] or the manifest; never hardcode (provider's SKILL.md)

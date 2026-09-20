@@ -1,0 +1,71 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Bound from the live tools/list at https://api.onchainagentintel.io/mcp (4 tools, real inputSchema,
+  fetched 2026-09-19) to the operationIds in openapi/onchainagentintel-io-openapi.yml (25 operations,
+  fetched from https://api.onchainagentintel.io/v1/public/openapi.json). Each tool's own description
+  names its free REST twin and its paid x402 counterpart, so bindings are by the provider's own
+  statement, not by name similarity.
+surfaces:
+  openapi: openapi/onchainagentintel-io-openapi.yml
+  mcp: https://api.onchainagentintel.io/mcp
+  mcp_gated: false
+  graphql: null
+  a2a: https://api.onchainagentintel.io/a2a/v1
+crosswalk:
+- tool: get_coverage_stats
+  category: read
+  rest: [public_v1_public_stats_get]
+  binding: 1:1 — same counts-only payload; the tool description names GET /v1/public/stats semantics and points at paid GET /v1/intel/market for the full market map.
+  confidence: high
+  paid_counterpart: paid_agent_intel_market_get
+- tool: get_leaderboards
+  category: read
+  rest: [public_v1_public_leaderboards_get]
+  binding: 1:1 — three ranked lists (top MCP, top OpenAPI, most recent) identical to GET /v1/public/leaderboards.
+  confidence: high
+  paid_counterpart: paid_agent_intel_trending_get
+- tool: get_agent_summary
+  category: read
+  rest: [public_v1_public_agent_chain_agent_id_get]
+  binding: 1:1 — inputSchema {chain, agent_id} mirrors the path parameters /v1/public/agent/{chain}/{agent_id}; the tool inherits that operation's parameters as its real input.
+  confidence: high
+  paid_counterpart: paid_agent_intel_profile_get
+mcp_only:
+- tool: get_network_teaser
+  reason: >-
+    Its free REST twin is described by the provider's SKILL.md as `/api/graph-teaser` (a 200-node preview),
+    which is NOT in the published OpenAPI; the paid full graph is paid_agent_intel_graph_get
+    (GET /v1/intel/graph). Recorded as MCP-only against the public contract.
+rest_only:
+- public_v1_public_capability_slug_get
+- public_v1_public_chain_chain_get
+- public_v1_public_badge_chain_agent_id_svg_get
+- public_v1_public_datasets_get
+- public_v1_public_datasets_slug_get
+- public_v1_public_openapi_json_get
+- public_v1_public_docs_get
+- public_agent_json_get
+- public_well_known_agent_card_get
+- public__well-known_agents_json_get
+- public_mcp_post
+- public__well-known_x402_json_get
+- paid_agent_intel_profile_get
+- paid_agent_intel_search_post
+- paid_agent_intel_trending_get
+- paid_agent_intel_peers_get
+- paid_agent_intel_market_get
+- paid_agent_intel_delta_get
+- paid_agent_intel_graph_get
+- paid_agent_intel_subscribe_post
+- paid_smart_contract_audit_post
+- paid_erc8183_evaluation_post
+coverage:
+  mcp_tools: 4
+  bound_to_rest: 3
+  mcp_only: 1
+  rest_operations: 25
+  rest_only: 22
+  note: >-
+    The MCP server is deliberately a free, counts-only projection: no paid x402 operation is exposed as a
+    tool. An agent that needs the enriched data must leave MCP and settle x402 over REST.

@@ -1,0 +1,53 @@
+generated: '2026-09-19'
+method: derived
+format: fastapi-detail + x402-402-envelope
+source: >-
+  Derived from openapi/onchainagentintel-io-openapi.yml (every paid operation declares 200 + 402 via
+  components.responses.PaymentRequired; the public operations declare only 200) and confirmed by live
+  unauthenticated probes on 2026-09-19: 402 on GET /v1/intel/agent/19353, 404 on GET
+  /v1/intel/subscription/abc, 422 on GET /v1/public/agent/base/abc, 406 on GET /mcp, 405 on GET /a2a/v1,
+  nginx 404 text/html on an unknown path. The provider does NOT use RFC 9457 application/problem+json.
+envelopes:
+- name: x402 payment challenge
+  status: 402
+  media_type: application/json
+  shape: '{ "x402Version": 1, "accepts": [ { "scheme", "network", "maxAmountRequired", "payTo", "asset", "maxTimeoutSeconds", "extra", "resource", "description", "mimeType" } ], "error": "Payment Required", "intel_id"|"sub_id"|…, "payment": {…}, "payment_options": [ … ], "preview": {…}, "see_also": {…} }'
+  headers: [x-payment-address, x-payment-amount-eth, x-payment-calldata, x-payment-chain-id, x-payment-network, Link]
+- name: FastAPI detail
+  status: 4xx
+  media_type: application/json
+  shape: '{ "detail": string | [ { "type", "loc": [], "msg", "input" } ] }'
+- name: JSON-RPC error (MCP)
+  status: 406
+  media_type: application/json
+  shape: '{ "jsonrpc": "2.0", "id": "server-error", "error": { "code": -32600, "message": string } }'
+problems:
+- status: 402
+  title: Payment Required
+  meaning: The operation is x402-gated; the body is a price list plus a free counts-only preview, not a failure.
+  applies_to: [paid_agent_intel_profile_get, paid_agent_intel_search_post, paid_agent_intel_trending_get, paid_agent_intel_peers_get, paid_agent_intel_market_get, paid_agent_intel_delta_get, paid_agent_intel_graph_get, paid_agent_intel_subscribe_post, paid_smart_contract_audit_post, paid_erc8183_evaluation_post]
+  remediation: Pick an accepts[] entry, sign an EIP-3009 transferWithAuthorization (or send native ETH with the quoted calldata), retry the same request with X-PAYMENT (or X-PAYMENT-TX). With an active subscription, pass wallet=<subscriber_addr> instead.
+  observed: {url: https://api.onchainagentintel.io/v1/intel/agent/19353, http_status: 402}
+- status: 404
+  title: Not Found
+  meaning: Unknown agent (public agent endpoint, per docs), unknown subscription id, or an unrouted path (nginx text/html 404).
+  remediation: Verify chain + agent_id against /v1/public/leaderboards or /v1/intel/search; for subscriptions use the sub_id returned by the 402 on POST /v1/intel/subscribe.
+  observed: {url: https://api.onchainagentintel.io/v1/intel/subscription/abc, http_status: 404, body: '{"detail":"Subscription not found"}'}
+- status: 405
+  title: Method Not Allowed
+  meaning: GET on a POST-only endpoint (the A2A JSON-RPC endpoint /a2a/v1).
+  observed: {url: https://api.onchainagentintel.io/a2a/v1, http_status: 405, body: '{"detail":"Method Not Allowed"}'}
+- status: 406
+  title: Not Acceptable
+  meaning: MCP endpoint called without Accept text/event-stream (JSON-RPC -32600 "Client must accept text/event-stream").
+  remediation: Send Accept application/json, text/event-stream on every MCP POST.
+  observed: {url: https://api.onchainagentintel.io/mcp, http_status: 406}
+- status: 422
+  title: Unprocessable Entity
+  meaning: FastAPI request validation failed (e.g. agent_id not an integer).
+  remediation: Read detail[].loc and detail[].msg; fix the named parameter.
+  observed: {url: https://api.onchainagentintel.io/v1/public/agent/base/abc, http_status: 422, body: '{"detail":[{"type":"int_parsing","loc":["path","agent_id"],"msg":"Input should be a valid integer, unable to parse string as an integer","input":"abc"}]}'}
+not_documented:
+- 429 rate limiting (no limits published, no headers observed)
+- 401/403 (no credentials exist to fail)
+- 5xx

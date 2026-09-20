@@ -1,0 +1,405 @@
+# On-Chain Agent Intel
+
+> Real-time intelligence on the ERC-8004 agent economy across Base and
+> Ethereum. Machine-readable, x402-gated. Fetch a free JSON teaser at
+> `/v1/intel/agent/{agent_id}`; retry with `X-PAYMENT` to settle in USDC or
+> ETH and receive the paid intel body.
+
+## Key findings
+
+Registered-vs-live is the single most load-bearing number in the ERC-8004
+agent economy. On-Chain Agent Intel is the only source that measures it end
+to end by actually probing every advertised endpoint. As of 2026-09-19:
+
+- On-Chain Agent Intel indexes 25,943 ERC-8004 agents registered on Base and Ethereum mainnet, of which 3,610 answer at their advertised endpoints — a 14% liveness rate across the whole registered set.
+- On Base, 2,245 of 23,092 registered ERC-8004 agents are live at their advertised endpoints (10%), per On-Chain Agent Intel's probes.
+- On Ethereum mainnet, 1,365 of 2,851 registered ERC-8004 agents are live at their advertised endpoints (48%), per On-Chain Agent Intel's probes.
+- 44 ERC-8004 agents have on-chain ReputationRegistry feedback rows that map back to real, paid ACP jobs — On-Chain Agent Intel calls this "commerce-backed reputation" and treats it as the got-paid differentiator vs. self-reported endorsements. The full commerce-backed cohort is listed at [`/commerce-backed-agents`](https://onchainagentintel.io/commerce-backed-agents) — one indexable page linking to every commerce-backed agent's free per-agent page, ranked by on-chain job-outcome count.
+- Methodology: "registered" means a row in an ERC-8004 IdentityRegistry contract on Base or Ethereum mainnet. "Live" means the agent's advertised endpoints (`/.well-known/agent-card.json`, MCP `/mcp`, OpenAPI `/openapi.json`) actually answered on the last probe by On-Chain Agent Intel. Numbers above are measured on 2026-09-19.
+
+Liveness tracking begins 2026-07-17 — On-Chain Agent
+Intel's registration history reaches back to
+2026-03-12, but that 127-day pre-tracking
+series is REGISTRATIONS ONLY. Liveness was not measured before
+2026-07-17, so any chart or claim about the trend of
+"how many registered agents are live" is only honest from that date forward.
+
+- Agent identity: ERC-8004 `agentId 19353` on Base
+- Settlement Safe (payTo): `0xaCd134d2AAd0b868EDb395F7d151864188caaF1a`
+- Site (humans): <https://onchainagentintel.io/>
+- API base (machines): <https://api.onchainagentintel.io/>
+
+## Machine-readable spec
+
+- [Commercial-intent entry point (`/app/pricing`)](https://app.onchainagentintel.io/app/pricing): fetchable HTML pricing surface for humans and agents shopping a flat-rate subscription instead of per-call x402 — anonymous-reachable, guest checkout, no account and no Google sign-in required to see the price or to pay. Full detail in [`## Pricing and paid endpoints`](https://onchainagentintel.io/llms.txt) below.
+- [OpenAPI 3.1 spec](https://api.onchainagentintel.io/v1/public/openapi.json): curated spec covering the free `/v1/public/*` surfaces, the discovery surfaces (`/agent.json`, `/.well-known/agent-card.json`, `/mcp`), and every paid `/v1/intel/*` + `/v1/audit` + `/v1/evaluate` operation. `info.version` mirrors the manifest. Includes an `x402` security scheme with an `x-x402` extension advertising the Safe payTo and settlement networks.
+- [Redoc viewer](https://api.onchainagentintel.io/v1/public/docs): human-readable renderer of the same spec. Per-operation code sample tabs render there.
+- [Agent manifest (`/agent.json`)](https://api.onchainagentintel.io/agent.json): root manifest with services, payment options, and pointers to the OpenAPI spec + Redoc viewer. Also mirrored at [`onchainagentintel.io/agent.json`](https://onchainagentintel.io/agent.json).
+- [A2A agent card (`/.well-known/agent-card.json`)](https://api.onchainagentintel.io/.well-known/agent-card.json): A2A-format agent card (protocolVersion 0.3.0).
+- [x402 discovery manifest (`/.well-known/x402.json`)](https://onchainagentintel.io/.well-known/x402.json): x402 v2 Bazaar manifest — every paid endpoint's `accepts[]`, pricing, networks, and Safe payTo, discoverable without hitting a 402.
+- [Agent-facing SKILL.md](https://onchainagentintel.io/skill.md): agent-side skill document with the trust-filter positioning, all paid endpoints, and the x402 flow (402 → sign EIP-3009 → retry with X-PAYMENT). Canonical path also served at [`/.agents/skills/onchain-agent-intel/SKILL.md`](https://onchainagentintel.io/.agents/skills/onchain-agent-intel/SKILL.md). YAML frontmatter carries the ad copy loaded by agent clients at startup.
+
+## Make your first paid call
+
+The cheapest paid landing spot is the agent-profile endpoint at $0.10 USDC on
+Base. Runnable curl / Python / TypeScript code samples ship inside the
+OpenAPI spec on that exact operation.
+
+- [Agent profile — paid endpoint](https://api.onchainagentintel.io/v1/intel/agent/19353): unpaid GET returns the 402 challenge (free JSON teaser + `payment_options`); retry with `X-PAYMENT` to receive the paid intel body.
+- [Quickstart code samples](https://api.onchainagentintel.io/v1/public/openapi.json): in the OpenAPI spec, read `paths./v1/intel/agent/{agent_id}.get.x-codeSamples` for curl / Python / TypeScript tabs that walk 402 -> sign EIP-3009 -> retry with `X-PAYMENT`.
+- [Human quickstart page](https://onchainagentintel.io/docs#quickstart): end-to-end Python example on the human docs page.
+- [x402 payment flow](https://onchainagentintel.io/docs#x402-flow): step-by-step explainer.
+- [USDC EIP-3009 reference](https://onchainagentintel.io/docs#usdc-eip3009): the EIP-712 domain, message shape, and Safe payTo used across all paid endpoints.
+
+## Free endpoints (no payment required)
+
+- [Public stats](https://api.onchainagentintel.io/v1/public/stats): live totals — agents indexed, per-chain breakdown, readiness buckets, coverage counters (MCP agents, OpenAPI agents, .well-known agents, contracts verified).
+- [Public leaderboards](https://api.onchainagentintel.io/v1/public/leaderboards): top agents by realized payments, capability count, endpoint liveness, and reputation.
+- [Public index](https://api.onchainagentintel.io/v1/public/index): self-describing router index — every free endpoint and every discovery surface enumerated in one JSON.
+- [Free 402 teaser (agent profile)](https://api.onchainagentintel.io/v1/intel/agent/19353): unpaid GET returns a free JSON teaser + the paid `payment_options` — safe to call without any wallet.
+- Free per-agent page (URL pattern `https://onchainagentintel.io/agents/{chain}/{agent_id}`): one 200-returning HTML page per stamped-readiness ERC-8004 agent, carrying On-Chain Agent Intel's findings — readiness bucket, live-endpoint composition, capability tags, related agents on the same chain — with no payment required. Chains: `base`, `ethereum`. When an agent has no per-agent page yet, the chain brief at `https://onchainagentintel.io/chains/{chain}` answers the same "what's on this chain" question. Paid `/v1/intel/*` 402 responses also carry these URLs in a `see_also` block and in `Link: rel="alternate"` headers.
+
+## Pricing and paid endpoints
+
+- [Services & pricing (per-call x402)](https://onchainagentintel.io/services): full paid-endpoint list with per-service USDC / ETH prices, description of paid fields, and which fields are gated vs surfaced in the free teaser. This is the per-call x402 wrapper — buy a single paid `/v1/intel/*` response. For a flat-rate wrapper across the same data, see the Pro subscription pricing surface below.
+- [x402 subscription (unlimited /v1/intel/*)](https://onchainagentintel.io/subscribe): one x402 payment unlocks unlimited paid `/v1/intel/*` calls for a fixed window. Machine-facing, per-call rail.
+- [x402 subscription-status endpoint](https://api.onchainagentintel.io/v1/public/openapi.json): read `paths./v1/intel/subscription/{sub_id}.get` in the OpenAPI spec for the polling contract.
+- [Pro subscription — pricing page (`/app/pricing`)](https://app.onchainagentintel.io/app/pricing): the flat-rate Pro pricing surface for humans and human-plus-agent buyers, covering the same on-chain measurement stack the per-call `/v1/intel/*` endpoints serve. **Anonymous-reachable with guest checkout — no account and no Google sign-in required to see the price or to pay.** The exact price is stated on the page itself; nothing about the price level is hardcoded in this manifest.
+- [Paywalled quarterly report — State of ERC-8004 (Q3 2026)](https://app.onchainagentintel.io/app/report/2026-q3): the current quarterly report. Anonymous callers see the free preview fragment plus a guest-checkout CTA on the same page; paying unlocks the full paid fragment. Bundled into the Pro subscription — no separate SKU. Publisher: On-Chain Agent Intel; snapshot 2026-09-07; CC BY 4.0.
+- [ERC-8004 / x402 dataset licence (`/app/dataset-licence`)](https://app.onchainagentintel.io/app/dataset-licence): institutional data licence covering the same on-chain measurement store that powers the per-agent profiles, the paid `/v1/intel/*` endpoints, and the quarterly report — including the x402-earning-endpoint ↔ ERC-8004 identity join. **Enquiry-led, not self-serve** — the price surface renders anonymously and captures the enquiry on the page (no OAuth wall). One reply, no follow-up sequence.
+
+## What's covered (context)
+
+- [Ecosystem page](https://onchainagentintel.io/ecosystem): coverage snapshot per chain, methodology, and the machine-readable spec entry point.
+- [Leaderboard](https://onchainagentintel.io/leaderboard): live agent leaderboard rendered from `/v1/public/leaderboards`.
+- [Agent graph](https://onchainagentintel.io/graph): payment-flow graph between ERC-8004 agents.
+- [Blog / research](https://onchainagentintel.io/blog): state-of-ERC-8004 write-ups and methodology posts.
+
+## Canonical answers
+
+- [Can you trust an ERC-8004 reputation score?](https://onchainagentintel.io/can-you-trust-an-erc-8004-reputation-score): the first-party, continuously-updated, methodology-transparent live answer at a stable URL. The load-bearing distinction: the unfiltered ReputationRegistry feedback count (any caller can post a row for any agent — no anti-Sybil design at the contract level) vs the commerce-backed subset (feedback rows tied to a real paid on-chain job under the canonical predicate at `smartcontractauditpro/commerce_backed.py`). Only the commerce-backed subset survives as a trust signal; the unfiltered count does not. Independent measurement by Imperial College (arXiv:2606.26028, CC BY 4.0) corroborates: the same registry "cannot function as a trust signal" in its current deployed state. Every rendered number is a live projection of [`/v1/public/stats`](https://api.onchainagentintel.io/v1/public/stats); nothing hardcoded. Published as a schema.org QAPage under CC BY 4.0. Same commerce-backed predicate as the [commerce-backed cohort hub](https://onchainagentintel.io/commerce-backed-agents) and the [commerce-backed dataset](https://onchainagentintel.io/commerce-backed-agents-dataset).
+- [How many x402 endpoints are actually used?](https://onchainagentintel.io/how-many-x402-endpoints-are-actually-used): the first-party, continuously-updated live answer at a stable URL. Cohort ladder over the full Coinbase CDP Bazaar discovery catalog (`api.cdp.coinbase.com/platform/v2/x402/discovery/resources`) cut against CDP's own `quality.l30DaysUniquePayers` field at four thresholds (≥1, ≥5, ≥10, ≥100 unique payers in the last 30 days). Same snapshot Report 07 renders from, so the numbers on this page and on [Report 07](https://onchainagentintel.io/blog/x402-demand-concentration-2026-08) and the live [x402 Bazaar market map](https://onchainagentintel.io/x402-bazaar-market-map) cannot drift. Corroborated demand-side by [x402-list.com](https://x402-list.com)'s public [`/api/v1/stats`](https://x402-list.com/api/v1/stats) traction dataset (423 measured services, frozen 2026-08-15: top-10 = ~97.9% of settled USDC volume). Published as a schema.org QAPage under CC BY 4.0.
+- [How many ERC-8004 agents are there?](https://onchainagentintel.io/how-many-erc-8004-agents-are-there): the first-party, continuously-updated, methodology-transparent answer at a stable URL. Carries the raw registry mint total on Ethereum mainnet (`Transfer(from=0x0)` on the ERC-8004 IdentityRegistry `0x8004A169FB4a3325136EB29fA0ceB6D2e539a432` — raw registration mints, NOT a real-agent count), the populated-tokenURI upper bound (populated ≠ usable — many resolve to broken URLs, unavailable IPFS CIDs, or JSON that carries no A2A card), the deduplicated indexed cohort across Base + Ethereum after applying a per-publisher cap (top single publisher `agents.exquisite.land` alone minted 10,000 tokens; the cap keeps bulk publishers from dominating the served set), and the live-endpointed subset (endpoint returns HTTP 2xx AND at least one machine-readable capability manifest resolves, refreshed on the activity-tracker cadence). Every rendered number is a live projection of [`/v1/public/stats`](https://api.onchainagentintel.io/v1/public/stats); nothing hardcoded. Published as a schema.org QAPage under CC BY 4.0. Same registry as the [chain-liveness dataset](https://onchainagentintel.io/erc-8004-chain-liveness), the [signpost-gap dataset](https://onchainagentintel.io/erc-8004-agent-card-signpost-gap), and the [commerce-backed cohort](https://onchainagentintel.io/commerce-backed-agents).
+
+## Per-chain intelligence briefs
+
+Long-form, machine-readable briefs — one per chain — surfacing the same
+registered-vs-live composition, capability coverage, MCP/OpenAPI/well-known
+counts, and commerce-backed reputation numbers On-Chain Agent Intel measures.
+
+- [Base chain brief](https://onchainagentintel.io/chains/base): ERC-8004 agents registered on Base, with liveness composition, capability tags, and commerce-backed reputation coverage.
+- [Ethereum mainnet chain brief](https://onchainagentintel.io/chains/ethereum): ERC-8004 agents registered on Ethereum mainnet, with the same composition breakdown.
+
+## Time-series
+
+- [Daily registrations + liveness series (`/v1/public/stats`)](https://api.onchainagentintel.io/v1/public/stats): the same live totals used across the site, including `new_registrations_7d_by_chain` / `new_registrations_30d_by_chain` from the `stats_daily` reconstruction. Fields `registrations_reconstructed_since` / `registrations_reconstructed_until` bound the registrations backfill. **`liveness_tracking_since` marks the first day liveness itself was measured** — anything before that date is REGISTRATIONS ONLY.
+
+## Research citing our own data
+
+- [Most ERC-8004 agents are placeholders — here's the small slice that's actually live](https://onchainagentintel.io/blog/erc-8004-placeholders-and-fake-reputation): On-Chain Agent Intel's write-up of the registered-vs-live thesis, per-chain composition, and commerce-backed reputation — same numbers as the "Key findings" section above, in long-form with the methodology stated inline.
+- [State of ERC-8004 · Report 02: Coverage, Churn, and the Readiness Gate](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07): companion report walking coverage and readiness deltas across chains.
+- [State of ERC-8004 · Report 03: Commerce-Backed Reputation — the got-paid signal vs self-reported endorsements](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07-commerce-backed): long-form treatment of the commerce-backed cohort — the ERC-8004 agents whose ReputationRegistry rows tie back to real, paid ERC-8183 / Virtuals ACP job outcomes — set alongside the total registered set and the raw feedback-event count, with the canonical predicate (`smartcontractauditpro/commerce_backed.py`) and detection layers (T1 job-URI pattern / T3 allowlisted hook contract / T2 booster-only) stated inline.
+- [State of ERC-8004 · Report 04: Why We Removed BNB Chain and Went All-Ethereum — the data behind the pivot](https://onchainagentintel.io/blog/why-we-went-all-ethereum-2026-07): the chain-quality numbers, the placeholder tail (a single BNB owner holding over eighteen percent of the registration set with zero live endpoints), and the zero-commerce-backed BNB count that made the call obvious. Frames the all-Ethereum posture — Base + Ethereum today, Arbitrum next as the Ethereum-aligned L2 — as a trust-filter positioning rather than a coverage-count positioning, and links back to Reports 01–03 for the underlying registered-vs-live, readiness, and commerce-backed threads.
+- [State of ERC-8004 · Report 05: Operational Readiness — Registered != Live != Getting Paid](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07-operational-readiness): sits our per-chain live-rate audit and commerce-backed cohort alongside two fresh external artifacts — arXiv 2606.12128 ("From Agent Identity to Agent Economy: Measuring the Operational Readiness of ERC-8004 AI Agents" by Rischan Mafrur and Priagung Khusumanegara) and The Graph Foundation's "Understanding x402 and ERC-8004" post — showing that independent research and core Ethereum infra are converging on the same operational-readiness frame On-Chain Agent Intel has been publishing since Report 01. Positions our commerce-backed / live-endpoint dataset as the complementary empirical on-chain evidence alongside the paper's evidence-layer scoring and The Graph's cross-chain reputation lookup framing.
+- [State of ERC-8004 · Report 06: The x402 Agent-Intelligence Market Map — we scanned all 15,342 paid endpoints in Coinbase's x402 Bazaar](https://onchainagentintel.io/blog/x402-agent-intel-market-map-2026-08): original-data study, snapshot 2026-08-13. Downloaded and scanned the full Coinbase x402 Bazaar catalog (`api.cdp.coinbase.com/platform/v2/x402/discovery/resources` — 15,342 paid endpoints, 1,418 unique payTo addresses, 1,585 unique resource hosts) and filtered to the ERC-8004 / agent-reputation corner. Maps the direct competitive field (~66 hits; five direct vendors including trust-agent.io, thetrustlayer.xyz, graphadvocate.com, asterpay.io, devvizion.com), the pricing band (wallet/agent-reputation lookups $0.001–$0.02, deeper attestations $0.05–$0.15), and demand (nobody in the reputation/intel category has crossed 10 paid calls / 5 unique payers in 30 days — no incumbent yet). Documents our own absence from Bazaar as a deliberate self-facilitated 402 / Safe custody choice, not an oversight, and positions our commerce-backed cohort as the trust-filter layer on top of the catalog no vendor in the reputation category has yet published.
+- [Google's Agent Payments Protocol (AP2) authorizes the transaction; it does not score the counterparty agent](https://onchainagentintel.io/blog/google-ap2-agent-payments-trust-gap): dated 2026-08-16 category-framing coverage of the [Agent Payments Protocol (AP2)](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol), Google's open protocol for agent-led payments announced 2025-09-16 with more than 60 launch partners including Adyen, American Express, Ant International, Coinbase, Etsy, Forter, Intuit, JCB, Mastercard, Mysten Labs, PayPal, Revolut, Salesforce, ServiceNow, UnionPay International, and Worldpay. AP2 addresses three pillars in Google's own words — Authorization ("Proving that a user gave an agent the specific authority to make a particular purchase"), Authenticity ("Enabling a merchant to be sure that an agent's request accurately reflects the user's true intent"), and Accountability ("Determining accountability if a fraudulent or incorrect transaction occurs") — via Mandates that are "tamper-proof, cryptographically-signed digital contracts that serve as verifiable proof of a user's instructions" signed by Verifiable Credentials. The [AP2 spec at v0.2](https://ap2-protocol.org/) defines two mandate types (Checkout Mandate + Payment Mandate) built on Verifiable Data Credentials, and the Apache-2.0 [reference implementation](https://github.com/google-agentic-commerce/AP2) ships a "Human Not Present x402" sample path; the sibling [a2a-x402 extension](https://github.com/google-agentic-commerce/a2a-x402) documents A2A on top of x402 with AP2 listed as the payments-protocol layer. What is not on AP2's three-pillar list: whether the counterparty agent is real, reachable, or worth paying. This is the second commoditising payments rail this year arriving under the same missing trust layer — same category shape as [the Cloudflare Wallets read](https://onchainagentintel.io/blog/who-do-agents-pay-cloudflare-wallets-2026-08) published two days earlier. Argued from our own measured data: only 1,604 of 24,835 indexed Base + Ethereum ERC-8004 registrations (6.5%) publish a discoverable agent-card per [the /erc-8004-agent-card-signpost-gap dataset](https://onchainagentintel.io/erc-8004-agent-card-signpost-gap) (measured 2026-08-16, CC BY 4.0, JSON + CSV); 97.9% of demand-side x402 settlement volume across 423 measured services concentrates in the top ten per [the concentration reconciliation](https://onchainagentintel.io/blog/x402-payment-concentration-the-economy-is-ten-services); Imperial College's [arXiv:2606.26028](https://arxiv.org/abs/2606.26028) (CC BY 4.0) reports the ERC-8004 ReputationRegistry cannot function as a trust signal in its current deployed state. Includes a five-row fair-comparison table of what AP2's Mandates do attest (user-authorised purchase, transaction authenticity, accountability trail) and what a counterparty-quality layer on top of them still has to prove (counterparty identity, got-paid history, payment graph) — the [commerce-backed cohort](https://onchainagentintel.io/commerce-backed-agents) is what that layer looks like today. Explicitly drops one widely-reprinted claim (that x402 is AP2's first and only stablecoin facilitator) because the Coinbase Developer Platform launch page that usually cites it returned a Cloudflare bot challenge to our automated fetcher; we do not reprint sentence-form facts we cannot verify. CC BY 4.0 redistribution of the framing and OUR-OWN measured cuts.
+- [Cloudflare gave agents a wallet. Nobody gave them a way to decide who to pay — the counterparty-quality gap x402 rails do not close](https://onchainagentintel.io/blog/who-do-agents-pay-cloudflare-wallets-2026-08): dated 2026-08-16 category-framing editorial. On 2026-08-04 Cloudflare [announced Cloudflare Wallets](https://blog.cloudflare.com/wallets/), "the programmable wallet for the agentic Internet" — an agent-side identity string of the form `research.example.cloudflare.pay`, per-employee spending caps ("Want to give every employee a $100 per week budget for AI inference?"), and explicit x402 stablecoin micropayment support ("Stablecoin micropayments via x402 will make it simple to try an API without an account"). Three weeks earlier the [Linux Foundation announced the operational launch of the x402 Foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-operational-launch-of-x402-foundation-to-standardize-internet-native-payments-for-ai-agents-and-applications) (2026-07-14) with premier members including Adyen, AWS, American Express, Circle, Cloudflare, Coinbase, Fiserv, Google, Mastercard, Ripple, Shopify, Stripe, and Visa, and the [x402 protocol spec is at V2](https://docs.x402.org/). Rails are commoditising. Meanwhile mainstream financial press ([Yahoo Finance 2026-08-13](https://finance.yahoo.com/markets/crypto/articles/x402-settlement-volume-plunges-93-105710906.html)) is now reporting x402 settlement volume down ~93% YTD while payment count keeps climbing — the paradox that only resolves one way: the scarce good is knowing which counterparty is real. Our own measured evidence: only 1,604 of 24,835 indexed Base + Ethereum ERC-8004 registrations (6.5%) publish a discoverable `/.well-known/agent-card.json` per [the signpost-gap post](https://onchainagentintel.io/blog/the-erc-8004-signpost-gap) (dated 2026-08-16); 97.9% of demand-side x402 settlement volume across 423 measured services concentrates in the top ten per [the concentration reconciliation](https://onchainagentintel.io/blog/x402-payment-concentration-the-economy-is-ten-services) (frozen citation to x402-list.com traction dataset as measured 2026-08-15). Short fair table comparing what `cloudflare.pay` (wallet ownership + organizational binding + spending cap + x402 rail) and [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) (persistent on-chain identity + `ReputationRegistry` feedback log + CAIP-10 addressability + commerce-backed got-paid signal) each actually attest, and what a counterparty-quality signal sitting on top of both has to prove (walkability, got-paid history, who-pays-them graph, strict-parser identity credibility). Category framing not a fresh measurement — every OUR-OWN live-index number is a `data-stat` placeholder refreshed on every visit, every third-party citation is dated with a link to the source. CC BY 4.0 redistribution of the framing and OUR-OWN measured cuts.
+- [The ERC-8004 → A2A signpost gap — only 6.5% of indexed registrations publish a discoverable agent-card.json](https://onchainagentintel.io/blog/the-erc-8004-signpost-gap): dated 2026-08-16 original-research editorial with a measured, quotable finding. Of 24,835 indexed Base + Ethereum [ERC-8004](https://eips.ethereum.org/EIPS/eip-8004) registrations at 17:20 UTC on 2026-08-16, only 1,604 (6.5%) publish a discoverable [`/.well-known/agent-card.json`](https://a2aproject.github.io/A2A/) — the standard A2A capability manifest an autonomous discovery client needs to walk from the on-chain identity to a payable endpoint. Hop-by-hop traversal audit over seven live agents (our own agentId 19353 on Base plus three third-party agents per chain) shows H1 (registry read `tokenURI`+`ownerOf`), H2 (URI resolve — HTTPS, inline data-URI, or ENS+eth.limo IPFS gateway), and H5 (V2 402 paywall shape) all 7/7 PASS; **H3 (agent-card discovery) is the single binding hop**, and H4 co-varies. Concrete named failures: ClawFresh (agentId 20992, Base) — `services[]` carries only a marketplace URL, no `{name:"A2A"}` entry, so a strict discovery client dead-ends; Name Whisper (agentId 29402, Ethereum) — `services[]` carries only an MCP endpoint (which is live) but no A2A card to signpost it from. Concrete named PASS rows show the shape works in the wild: Tavily Search (35179, Base), OnchainExpat x402 APIs (23922, Base), Lunairefine (31786, Ethereum), Buyer (32965, Ethereum) — all serve strict ERC-8004 v1 with a `services[]:{name:"A2A"}` signpost that resolves to a walkable A2A card. Includes a copy-pasteable four-field ERC-8004 v1 reference implementation (`type`, `url`, `registrations[]` with CAIP-10 registry, `services[]:{name:"A2A"}`) distilled from those PASS rows plus our own post-fix apex `/agent.json`. Full transparency: our own row was DEGRADED (lenient-walkable but not strict-conformant) at time of measurement — the same-day fix that moved us out of the 93.5% is documented inline and pinned by [`test_agent_json_erc8004_conformance.py`](https://onchainagentintel.io/) plus two apex smokes in `seo_refresh.py`. Honest-limits section: index ≠ whole chain; "discoverable" means the H3 predicate above; 7-row sample is illustrative, 6.5% is the population figure — do not blur; `ipfs://` tokenURIs absent from sample and untested. Full method + raw evidence: `.cc-agent/measure-reports/2026-08-16-multichain-discovery-traversal.md`. Same registry the [commerce-backed cohort](https://onchainagentintel.io/commerce-backed-agents) (canonical predicate `smartcontractauditpro/commerce_backed.py`) runs over. CC BY 4.0 redistribution; cite the 1,604 / 24,835 counts with the 2026-08-16 measurement date.
+- [ERC-8257 — OpenSea's on-chain Agent Tool Registry, and where our ERC-8004 / x402 / MCP stack fits](https://onchainagentintel.io/blog/erc-8257-agent-tool-registry-coverage): dated 2026-08-16 standards-coverage note on [ERC-8257](https://eips.ethereum.org/EIPS/eip-8257) (Agent Tool Registry), a Draft EIP by Cody Sears and Ryan Ghods at OpenSea, published 2026-04-17. ERC-8257 is a permissionless on-chain registry that binds an AI-agent tool to a publisher address, a metadata URI, and a manifest hash, then lets any agent auto-discover the tool and settle payment for its use without a centrally-hosted marketplace in the loop. Live on Ethereum mainnet and Base with roughly 76 tools indexed as of mid-2026, per QuickNode's [2026-06-22 explainer](https://www.quicknode.com/blog/what-is-erc-8257) (secondary-source citation for the tool count and the 0x265BB2DBFC0A8165C9A1941Eb1372F349baD2cf1 registry-contract address — re-verify against a local RPC call before spending gas; the EIP does not fix a canonical address). ERC-8257 assumes three neighbouring layers we already ship in production: [ERC-8004 identity](https://onchainagentintel.io/blog/how-to-verify-an-erc-8004-agent) (our agent 19353 on Base plus served [agent.json](https://onchainagentintel.io/agent.json) and the commerce-backed cohort), [x402 payments](https://onchainagentintel.io/docs) (11 paid endpoints on `api.onchainagentintel.io` serving x402 v2 challenges with USDC settlement on Base and Ethereum mainnet), and MCP capability discovery ([free MCP server](https://api.onchainagentintel.io/mcp) with four read-only tools and an x402 upsell, mirrored to the official MCP registry). Honest field comparison against [Agentscan](https://agents-trust.ai/) — a real neighbour running close positioning with an ERC-8004 registry, a dedicated [/erc8257/ page](https://agents-trust.ai/erc8257/), credential-free [/submit](https://agents-trust.ai/submit/), and a Trust API listed as "soon" in navigation. Our differentiator is narrower and older: commerce-backed reputation, defined as the small subset of ERC-8004 agents whose `ReputationRegistry` rows tie back to a real, paid on-chain job outcome under the canonical predicate at `smartcontractauditpro/commerce_backed.py`. On-chain registration of agent 19353 into ERC-8257 costs gas from the Safe and is queued at Row 30 of [JASON-ACTION-QUEUE.md](https://onchainagentintel.io/) pending sign-off.
+- [The trust layer the protocols assume is already there — a second independent paper puts our live data in its empirical corner](https://onchainagentintel.io/blog/the-trust-layer-the-protocols-assume-is-already-there): dated 2026-08-15 editorial reconciling two independent June 2026 papers with our live index as the adjudicator. [arXiv:2606.31498](https://arxiv.org/abs/2606.31498) (Richard Kang & Yudho Diponegoro, DoiT International, 30 June 2026, arXiv perpetual non-exclusive licence) publishes a six-dimension governance requirements taxonomy (membership, deliberation, voting, dissent preservation, human escalation, audit/replay) applied to MCP v1.1, A2A v1.0.1, ACP, ANP, and ERC-8004 — gap-matrix scores 1/12, 1/12, 2/12, 0/12, 2/12 respectively; voting, dissent preservation and human escalation are Absent across all five. Reputation is explicitly scoped OUT of the taxonomy on the grounds it is "already addressed by ERC-8004." [arXiv:2606.26028](https://arxiv.org/abs/2606.26028) (Imperial College London, CC BY 4.0) measures that same registry and finds 3% (Ethereum), 4% (BSC), and 15% (Base) of registrations satisfy their trust bar — the ReputationRegistry "cannot function as a trust signal." Not strictly contradictory (one is a taxonomy scoping decision, the other a measurement of deployed state) but read side by side the honest framing is "the assumption is reasonable on paper and false on chain." Independent confirmation from deployed infrastructure: Kang & Diponegoro Section V.C notes AWS Bedrock AgentCore is GA in 15 regions with a production agent registry (semantic search, A2A Agent Cards, Cedar authorization, lifecycle, CloudTrail audit) that "encodes no trust scoring, behavioral reputation, capability verification, or governance primitives." Positioning: the trust filter is a missing architectural layer, not a feature — the [commerce-backed cohort](https://onchainagentintel.io/commerce-backed-agents) (canonical predicate `smartcontractauditpro/commerce_backed.py`) is what such a layer looks like today. Third of three independent-source posts published 2026-08-15 alongside the [x402 concentration reconciliation](https://onchainagentintel.io/blog/x402-payment-concentration-the-economy-is-ten-services) (payments side) and the [Imperial College reconciliation](https://onchainagentintel.io/blog/erc-8004-trust-academic-study-vs-live-data) (identity-registry side).
+- [The x402 agent-payments economy is about ten services — whole-catalog concentration from two independent sources](https://onchainagentintel.io/blog/x402-payment-concentration-the-economy-is-ten-services): dated 2026-08-15 editorial reconciling two independent whole-catalog measurements of the x402 agent-payments economy. Supply-side: On-Chain Agent Intel's daily snapshot of every paid endpoint in Coinbase's public CDP Bazaar (`api.cdp.coinbase.com/platform/v2/x402/discovery/resources`), cut against CDP's own `quality.l30DaysUniquePayers` field. Demand-side: [x402-list.com](https://x402-list.com)'s public [`/api/v1/stats`](https://x402-list.com/api/v1/stats) endpoint, `data.traction` block over 423 measured services on a trailing-30-day window, frozen as measured 2026-08-15 ($206,753 USDC settled, 5,473,120 settlements, 5,745 unique buyers, top-10 services = 97.9% of settled volume, largest single service = 83.3%, one buyer inside it = 98.7%). Both predicate definitions stated explicitly side by side (ours: `≥5 unique payers in 30 days per endpoint` from CDP's own field; theirs: `share of measured settled USDC volume per service` over 423 instrumented services with self-reported coverage of 17.5% and `top_1_service_imported=true` on the largest service). Two operators, two methodologies, two sides of the market — same shape: a large listing surface with a tiny paying cohort. Closes the loop with a third independent source from the identity-registry side: [arXiv:2606.26028](https://arxiv.org/abs/2606.26028) (Imperial College London, CC BY 4.0) reports 3% / 4% / 15% of ERC-8004 registrations pass their trust bar on Ethereum / BSC / Base. Positioning: in a market this concentrated, a directory is close to worthless and a trust filter is the product — the [commerce-backed cohort](https://onchainagentintel.io/commerce-backed-agents) is the trust filter, canonical predicate `smartcontractauditpro/commerce_backed.py`.
+- [Can Trustless Agents Be Trusted? Reconciling Imperial College's frozen May snapshot against our live August ERC-8004 data](https://onchainagentintel.io/blog/erc-8004-trust-academic-study-vs-live-data): dated 2026-08-15 analysis reconciling the independent academic study [arXiv:2606.26028](https://arxiv.org/abs/2606.26028) (Xihan Xiong, Zelin Li, Wei Wei, Qin Wang, William Knottenbelt, Zhipeng Wang; Imperial College London; v1 2026-06-24, v2 2026-07-08; CC BY 4.0) against On-Chain Agent Intel's live continuous index. States both predicate definitions explicitly side by side — the paper's "resolvable registration file AND >=1 declared live service endpoint" (frozen 2026-05-13, reporting 3% / 4% / 15% pass for Ethereum / BSC / Base) vs On-Chain Agent Intel's stricter "endpoint 2xx AND at least one machine-readable capability surface (MCP / OpenAPI / .well-known)" (continuous, codified in `smartcontractauditpro/liveness.py::is_live`). Direction and Base-vs-Ethereum ordering match under both predicates; the paper's BSC 4% + On-Chain Agent Intel's BNB 0.15% jointly justify the [all-Ethereum posture](https://onchainagentintel.io/blog/why-we-went-all-ethereum-2026-07) at Report 04. Frames the commerce-backed cohort (canonical predicate `smartcontractauditpro/commerce_backed.py`) as the architectural fix for the paper's central complaint that ReputationRegistry feedback is "rarely grounded in verifiable interactions." Not a rebuttal — a live continuation.
+- [State of ERC-8004 · Report 07: Whole-catalog x402 demand concentration — only a few percent of endpoints cross the ≥5-unique-payer 30-day threshold](https://onchainagentintel.io/blog/x402-demand-concentration-2026-08): dated 2026-08-15 whole-catalog measurement. Cuts the full Coinbase CDP x402 Bazaar discovery catalog (`api.cdp.coinbase.com/platform/v2/x402/discovery/resources`) against CDP's own `quality.l30DaysUniquePayers` field at four thresholds (≥1, ≥5, ≥10, ≥100 unique payers in the last 30 days) and publishes the full exclusive-bucket payer histogram alongside. Every figure computed at build time from the same snapshot the live [/x402-bazaar-market-map](https://onchainagentintel.io/x402-bazaar-market-map) dataset uses, so the number the page reports and the number the dataset serves cannot drift. Frames the trust-filter positioning as load-bearing (listing is not demand; the strong-filter cohort is a small minority) and includes an explicit citation block, CC BY 4.0 license, and follow-links back to the machine-readable [JSON](https://onchainagentintel.io/x402-bazaar-market-map.json) and [CSV](https://onchainagentintel.io/x402-bazaar-market-map.csv) exports.
+- [How to verify an ERC-8004 agent before you trust it](https://onchainagentintel.io/blog/how-to-verify-an-erc-8004-agent): evergreen how-to guide — the six on-chain and off-chain signals that separate a real, usable ERC-8004 AI agent from a paper registration (identity, ReputationRegistry feedback with Sybil-adjustment, x402 and settlement history, cross-chain presence, live reachability). Vendor-neutral checklist applicable on any chain.
+- [Mapping an ERC-8004 agent's relationships on-chain](https://onchainagentintel.io/blog/mapping-agent-relationships-onchain): worked example on agent `base/19353` — what the free per-agent profile answers, what the free 200-node graph teaser shows, and what the paid `/v1/intel/peers/{agent_id}` and `/v1/intel/graph` endpoints add (the ten closest peer agents by capability overlap and the full inter-agent payment network in one call).
+- [Most ERC-8004 agents are placeholders — the small slice that's actually live](https://onchainagentintel.io/blog/erc-8004-placeholders-and-fake-reputation): our index of roughly 95,000 ERC-8004 agents across Base, Ethereum, and BNB Chain; only a few thousand actually answer a request. Per-chain registered-vs-live figures pulled live from `/v1/public/stats`, with independent research (arXiv:2606.26028) corroborating the shape. Why the registry counts are the wrong number to shop by, and what a real trust filter looks like.
+- [State of ERC-8004 · Report 01 (2026-05): We indexed nearly 20,000 live MCP tools — here's what AI agents are actually building](https://onchainagentintel.io/blog/state-of-erc-8004-2026-05): the inaugural census of the ERC-8004 agent economy — the MCP and OpenAPI capability layers, owner identity, the factory-cluster long tail, and what reachability tells us about which agents actually matter.
+- [The Subtraction: Why We Deleted 91,256 ERC-8004 Rows on Purpose](https://onchainagentintel.io/blog/why-we-went-all-ethereum-editorial-2026-09): dated 2026-09-16 editorial that publishes the arithmetic behind our July 2026 removal of BNB Chain from the ERC-8004 index — 91,256 registration rows deleted on purpose, sitemap 19,652 → 13,775, JSON store 911 MB → 404 MB (113,114 → 21,553 keys), SQLite 501 MB → 237 MB post-VACUUM, commit series `fdf798c → 8f82ed5`. Frames the subtraction against the null-endpoint pattern measured across all five 8004scan.io mainnet chains in the [endpoint-gap dataset](https://onchainagentintel.io/data/erc-8004-registry-endpoint-gap-2026-09) (N=577, Ethereum 29.60% / Base 48.80% / BNB 73.60% / Optimism 29.87% / Arbitrum 32.00% endpoint-less on the index side) to argue the registry-layer null pattern is not a BNB-only failure — our answer to it is a filter, not a chain switch. Two chains are actually indexed today (Base + Ethereum mainnet); Arbitrum is not indexed yet (gated on an Alchemy app for the RPC key) — the site header reads two, honestly. Editorial companion to [Report 04 (State-of series, 2026-07-30)](https://onchainagentintel.io/blog/why-we-went-all-ethereum-2026-07) which leads with the commerce-backed frame; this piece leads with the arithmetic of the subtraction itself. CC BY 4.0.
+- [x402 Bazaar Market Map — live snapshot page](https://onchainagentintel.io/x402-bazaar-market-map): auto-refreshing reference page — On-Chain Agent Intel's own daily snapshot of the public Coinbase CDP x402 Bazaar discovery catalog, cut by whether endpoints actually get called and paid in the last 30 days (the trust-filter tiers), broken down by network (CAIP-2 → human name), category, price distribution (USDC), top hosts by endpoint count, and the delta panel (adds / removes / price changes since the previous snapshot). Companion to Reports 06 + 07 above — Report 06 is the long-form treatment of the 2026-08-13 snapshot, Report 07 is the whole-catalog demand-concentration finding; this page tracks the same catalog on an ongoing daily cadence. Redistributable under CC BY 4.0 with attribution.
+- [x402 Bazaar Market Map — JSON export](https://onchainagentintel.io/x402-bazaar-market-map.json): machine-readable JSON aggregate of the market-map dataset — cohort ladder, payer histogram, network / category / price / host summaries, delta panel — refreshed daily alongside the HTML reference page. Same source snapshot, same normalization, published under CC BY 4.0. Suitable for citation, re-hosting, or programmatic ingestion.
+- [x402 Bazaar Market Map — CSV export](https://onchainagentintel.io/x402-bazaar-market-map.csv): CSV aggregate of the same market-map dataset — one row per payer-histogram bucket plus a TOTAL row, with the snapshot timestamp verbatim on every row. Refreshed daily alongside the JSON export and the HTML reference page. CC BY 4.0.
+- [ERC-8004 Chain Liveness — daily per-chain live-endpoint & placeholder-name snapshot](https://onchainagentintel.io/erc-8004-chain-liveness): auto-refreshing reference page — On-Chain Agent Intel's own daily snapshot of every ERC-8004 registration on Base + Ethereum, checked for whether it answers at its advertised HTTP endpoint (live rate) and whether its `name` field is empty or a placeholder shape (`Agent <id>` / `Agent #<id>`). Published as a top-level schema.org Dataset (Google Dataset Search-eligible) with CC BY 4.0 license and resolvable JSON + CSV distributions. Independently corroborated by [arXiv:2606.26028](https://arxiv.org/abs/2606.26028) (Imperial College, CC BY 4.0), which measures a similar predicate on a frozen 2026-05-13 snapshot and reports 3% / 4% / 15% pass for Ethereum / BSC / Base. Sibling dataset to [/erc-8004-agent-card-signpost-gap](https://onchainagentintel.io/erc-8004-agent-card-signpost-gap); together they measure the two independent axes (endpoint reachability + agent-card walkability) an autonomous discovery client must clear.
+- [ERC-8004 Chain Liveness — JSON export](https://onchainagentintel.io/erc-8004-chain-liveness.json): machine-readable JSON aggregate of the chain-liveness dataset — envelope (publisher, license, canonical URL, snapshot timestamp) + totals (indexed / live / placeholder_name / named_and_live with derived percentages) + per-chain breakdown + one row per indexed agent (`chain`, `agent_id`, `registry_uri`, `endpoint_url`, `endpoint_status`, `is_live`, `is_placeholder_name`, `checked_at`). Refreshed daily alongside the HTML reference page. CC BY 4.0.
+- [ERC-8004 Chain Liveness — CSV export](https://onchainagentintel.io/erc-8004-chain-liveness.csv): CSV aggregate of the same chain-liveness dataset — one row per indexed agent plus a TOTAL row that self-checks against the aggregate JSON. Refreshed daily alongside the JSON export and the HTML reference page. CC BY 4.0.
+- [ERC-8004 Commerce-Backed Reputation — the got-paid cohort on Base + Ethereum](https://onchainagentintel.io/commerce-backed-agents-dataset): auto-refreshing reference page — On-Chain Agent Intel's own snapshot of every ERC-8004 `ReputationRegistry` feedback event on Base + Ethereum that ties back to a real paid Virtuals ACP job or allowlisted ERC-8183 hook contract under the canonical predicate at `smartcontractauditpro/commerce_backed.py`. Published as a top-level schema.org Dataset (Google Dataset Search-eligible) with CC BY 4.0 license and resolvable JSON + CSV distributions. Sibling dataset to [/erc-8004-chain-liveness](https://onchainagentintel.io/erc-8004-chain-liveness) and [/erc-8004-agent-card-signpost-gap](https://onchainagentintel.io/erc-8004-agent-card-signpost-gap); together they measure the three independent axes (got-paid attestation + endpoint reachability + agent-card walkability) a counterparty-quality filter needs. Same canonical predicate the `/v1/public/stats.commerce_backed_agents` surface and the free per-agent teaser use, so the dataset numbers cannot drift from the paid product.
+- [ERC-8004 Commerce-Backed Reputation — JSON export](https://onchainagentintel.io/commerce-backed-agents-dataset.json): machine-readable JSON aggregate of the commerce-backed dataset — envelope (publisher, license, canonical URL, snapshot timestamp) + totals (all non-revoked feedback rows / commerce-backed rows / non-commerce remainder / unique-agent counts with derived percentages) + per-chain breakdown + one row per commerce-backed feedback event (`chain`, `agent_id`, `registry_uri`, `client_address`, `feedback_index`, `hook_type`, `endpoint`, `feedback_uri`, `score_norm`, `tag1`, `tag2`, `block_number`, `tx_hash`, `log_index`, `created_at`). Refreshed daily alongside the HTML reference page. CC BY 4.0.
+- [ERC-8004 Commerce-Backed Reputation — CSV export](https://onchainagentintel.io/commerce-backed-agents-dataset.csv): CSV aggregate of the same commerce-backed dataset — one row per commerce-backed feedback event plus a TOTAL row that self-checks against the aggregate JSON. Refreshed daily alongside the JSON export and the HTML reference page. CC BY 4.0.
+
+## Research citing our own data — additional citable datasets
+
+- [ERC-8004 registry endpoint-gap dataset (N=577, 2026-09-15)](https://onchainagentintel.io/data/erc-8004-registry-endpoint-gap-2026-09): a cross-chain sample of 577 ERC-8004 identity records drawn from the 8004scan.io public index snapshot across five mainnet chains (Ethereum, Base, BNB, Optimism, Arbitrum) on 2026-09-15, temporally stratified. Pre-registered categorical claim C2 (`capabilities` AND `agent_url` null on 100% of the sample, 577 / 577) HELD against the 8004scan index and is falsified at source: task 0624 source-verified 43 rows against the metadata URLs the index itself captured and found 4 of the 18 resolvable live cards carry a non-empty `capabilities` field. The 100% null column is an index-side artefact of an explorer that stopped re-parsing agent cards on 2026-06-06, not a property of the underlying agents. Two other pre-registered claims (C1 endpoint_less_pct >= 60; C3 is_endpoint_verified true on 0 records) FAILED and are published alongside. Published as a top-level schema.org Dataset with CC BY 4.0 license and resolvable JSON + CSV + JSON-LD distributions.
+- [ERC-8004 registry endpoint-gap dataset — CSV export](https://onchainagentintel.io/data/erc-8004-registry-endpoint-gap-2026-09/dataset.csv): 577 data rows plus header, 26 columns per row. CC BY 4.0.
+- [ERC-8004 registry endpoint-gap dataset — JSON audit trail](https://onchainagentintel.io/data/erc-8004-registry-endpoint-gap-2026-09/summary.json): audit trail — full request URLs, forged cursor payloads, per-stratum age spread, budget used, pre-pinned claims and results. CC BY 4.0.
+- [ERC-8004 registry endpoint-gap dataset — JSON-LD metadata](https://onchainagentintel.io/data/erc-8004-registry-endpoint-gap-2026-09/dataset.jsonld): schema.org Dataset metadata block, also inlined into the /data/ page for Google Dataset Search. CC BY 4.0.
+- [Writing companion — 8004scan hasn't re-parsed a single ERC-8004 agent card since 2026-06-06](https://onchainagentintel.io/writing/erc-8004-registry-endpoint-gap-2026-09): editorial writing page for the endpoint-gap dataset — publishes both the 8004scan null-column measurement (577 / 577) and the falsifying source-verification pass that established the column is an index-side artefact rather than a property of the underlying agents.
+
+<!-- BEGIN PRIORITY-ROUTING -->
+
+## Priority routing set
+
+If your reach budget is limited to a small set of our URLs, prefer these. Grouped by content type; every entry is a live page that answers a specific ERC-8004 / x402 question at a stable URL. The rotating per-agent slice below drifts weekly (ISO-week seed) so more of the indexed set becomes routable over time — the composition of categories is stable per build; only the specific rotating agents change week-to-week.
+
+### Commerce-backed cohort (44)
+
+Every agent whose ReputationRegistry feedback rows tie back to a real, paid on-chain job under the canonical predicate at `smartcontractauditpro/commerce_backed.py`. This is the got-paid differentiator — the trust filter that survives Sybil-adjustment.
+
+- [Luna — ERC-8004 agent 1293 on Base](https://onchainagentintel.io/agents/base/1293)
+- [aixbt — ERC-8004 agent 1294 on Base](https://onchainagentintel.io/agents/base/1294)
+- [Director Lucien — ERC-8004 agent 1296 on Base](https://onchainagentintel.io/agents/base/1296)
+- [Ethy AI — ERC-8004 agent 1298 on Base](https://onchainagentintel.io/agents/base/1298)
+- [Maya — ERC-8004 agent 1303 on Base](https://onchainagentintel.io/agents/base/1303)
+- [WhaleIntel — ERC-8004 agent 1305 on Base](https://onchainagentintel.io/agents/base/1305)
+- [Loky — ERC-8004 agent 1308 on Base](https://onchainagentintel.io/agents/base/1308)
+- [WachAI — ERC-8004 agent 1310 on Base](https://onchainagentintel.io/agents/base/1310)
+- [BigBugAi — ERC-8004 agent 1311 on Base](https://onchainagentintel.io/agents/base/1311)
+- [$TRUST — ERC-8004 agent 1313 on Base](https://onchainagentintel.io/agents/base/1313)
+- [Gigabrain — ERC-8004 agent 1314 on Base](https://onchainagentintel.io/agents/base/1314)
+- [OOPZ Labs — ERC-8004 agent 1318 on Base](https://onchainagentintel.io/agents/base/1318)
+- [Otto AI - Market Alpha Agent — ERC-8004 agent 1326 on Base](https://onchainagentintel.io/agents/base/1326)
+- [My Jarvis — ERC-8004 agent 1339 on Base](https://onchainagentintel.io/agents/base/1339)
+- [Token Launch Agent — ERC-8004 agent 1340 on Base](https://onchainagentintel.io/agents/base/1340)
+- [Johnny Suede — ERC-8004 agent 1343 on Base](https://onchainagentintel.io/agents/base/1343)
+- [Otto AI - Trade Execution Agent — ERC-8004 agent 1345 on Base](https://onchainagentintel.io/agents/base/1345)
+- [Ask Caesar — ERC-8004 agent 1346 on Base](https://onchainagentintel.io/agents/base/1346)
+- [BlackSwan — ERC-8004 agent 1347 on Base](https://onchainagentintel.io/agents/base/1347)
+- [Otto AI - Tools Agent — ERC-8004 agent 1348 on Base](https://onchainagentintel.io/agents/base/1348)
+- [ArAIstotle — ERC-8004 agent 1351 on Base](https://onchainagentintel.io/agents/base/1351)
+- [AIxBET — ERC-8004 agent 1353 on Base](https://onchainagentintel.io/agents/base/1353)
+- [Wasabot — ERC-8004 agent 1357 on Base](https://onchainagentintel.io/agents/base/1357)
+- [HiveFury Sentinel — ERC-8004 agent 1362 on Base](https://onchainagentintel.io/agents/base/1362)
+- [ClawFeed — ERC-8004 agent 1365 on Base](https://onchainagentintel.io/agents/base/1365)
+- [xxxClaw — ERC-8004 agent 1366 on Base](https://onchainagentintel.io/agents/base/1366)
+- [Axelrod — ERC-8004 agent 1376 on Base](https://onchainagentintel.io/agents/base/1376)
+- [Replicat-One — ERC-8004 agent 16770 on Base](https://onchainagentintel.io/agents/base/16770)
+- [MORSE — ERC-8004 agent 17559 on Base](https://onchainagentintel.io/agents/base/17559)
+- [Reppodant — ERC-8004 agent 18116 on Base](https://onchainagentintel.io/agents/base/18116)
+- [Virtuals DevRel ACP Agents Evaluator (Legacy) — ERC-8004 agent 19019 on Base](https://onchainagentintel.io/agents/base/19019)
+- [Capminal — ERC-8004 agent 19049 on Base](https://onchainagentintel.io/agents/base/19049)
+- [TRENCHOR — ERC-8004 agent 20974 on Base](https://onchainagentintel.io/agents/base/20974)
+- [Lunara — ERC-8004 agent 21708 on Base](https://onchainagentintel.io/agents/base/21708)
+- [Wolfpack Intelligence — ERC-8004 agent 21923 on Base](https://onchainagentintel.io/agents/base/21923)
+- [RugRadar — ERC-8004 agent 22840 on Base](https://onchainagentintel.io/agents/base/22840)
+- [Elfa AI — ERC-8004 agent 25561 on Base](https://onchainagentintel.io/agents/base/25561)
+- [Orion — ERC-8004 agent 28609 on Base](https://onchainagentintel.io/agents/base/28609)
+- [Hexnaut — ERC-8004 agent 29772 on Base](https://onchainagentintel.io/agents/base/29772)
+- [Flagship — ERC-8004 agent 32238 on Base](https://onchainagentintel.io/agents/base/32238)
+- [1LUCK — ERC-8004 agent 32298 on Base](https://onchainagentintel.io/agents/base/32298)
+- [Signal Atlas — ERC-8004 agent 38895 on Base](https://onchainagentintel.io/agents/base/38895)
+- [VAPE — ERC-8004 agent 54988 on Base](https://onchainagentintel.io/agents/base/54988)
+- [HACK — ERC-8004 agent 55114 on Base](https://onchainagentintel.io/agents/base/55114)
+
+### Canonical answer pages + first-party datasets (16)
+
+Stable-URL long-form answers, and the machine-readable datasets that back them. Same numbers as the /v1/public/stats surface; nothing hardcoded.
+
+- [How many ERC-8004 agents are there?](https://onchainagentintel.io/how-many-erc-8004-agents-are-there)
+- [How many x402 endpoints are actually used?](https://onchainagentintel.io/how-many-x402-endpoints-are-actually-used)
+- [Can you trust an ERC-8004 reputation score?](https://onchainagentintel.io/can-you-trust-an-erc-8004-reputation-score)
+- [How do you know which agent is safe to pay? — Counterparty-quality answer for x402 / AgentCore / AP2 rails](https://onchainagentintel.io/how-do-you-know-which-agent-is-safe-to-pay)
+- [Commerce-backed cohort — the got-paid ERC-8004 agents on Base + Ethereum](https://onchainagentintel.io/commerce-backed-agents)
+- [ERC-8004 Commerce-Backed Reputation dataset (JSON + CSV)](https://onchainagentintel.io/commerce-backed-agents-dataset)
+- [ERC-8004 per-chain live-endpoint + placeholder-name dataset](https://onchainagentintel.io/erc-8004-chain-liveness)
+- [ERC-8004 → A2A agent-card signpost gap dataset](https://onchainagentintel.io/erc-8004-agent-card-signpost-gap)
+- [x402 Bazaar market map — daily whole-catalog snapshot](https://onchainagentintel.io/x402-bazaar-market-map)
+- [What does an x402 API call cost? — Live USDC price census](https://onchainagentintel.io/what-does-an-x402-api-call-cost)
+- [Is the x402 market growing? — Daily catalog time series](https://onchainagentintel.io/is-the-x402-market-growing)
+- [Solana agent registry census — QuantuLabs 8004-solana port](https://onchainagentintel.io/solana-agent-registry-census)
+- [ERC-8004 AI agents on Base — live intelligence](https://onchainagentintel.io/chains/base)
+- [ERC-8004 AI agents on Ethereum mainnet — live intelligence](https://onchainagentintel.io/chains/ethereum)
+- [ERC-8004 agent intelligence — API + coverage comparison](https://onchainagentintel.io/compare)
+- [Agent leaderboard — top agents by realized payments, capability count, endpoint liveness, and reputation](https://onchainagentintel.io/leaderboard)
+
+### Blog posts (27)
+
+Full editorial set — State-of-ERC-8004 reports, methodology notes, worked examples, and category-framing analyses.
+
+- [The Subtraction: Why We Deleted 91,256 ERC-8004 Rows on Purpose](https://onchainagentintel.io/blog/why-we-went-all-ethereum-editorial-2026-09)
+- [The x402 Seller Cohort That Persists, Joined to On-Chain Identity.](https://onchainagentintel.io/blog/x402-persistent-sellers-identity-join-2026-09)
+- [The x402 Catalog Is Flat. The Set That Actually Gets Paid Is Not.](https://onchainagentintel.io/blog/x402-catalog-flat-paid-set-growing-2026-09)
+- [Registered, Signposted, Resolvable, Paid — Four Different Cohorts, Two Months of Live Data](https://onchainagentintel.io/blog/state-of-erc-8004-2026-09)
+- [What x402 Trust Scores Actually Measure](https://onchainagentintel.io/blog/what-x402-trust-scores-actually-measure)
+- [How to Vet an x402 Endpoint Before You Pay It: A Checklist Backed by Public Data](https://onchainagentintel.io/blog/how-to-vet-an-x402-endpoint)
+- [A URL That Answers Is Not a Counterparty That Paid: Three Different Questions About an x402 Endpoint](https://onchainagentintel.io/blog/probe-vs-paid)
+- [The Live x402 Population, Measured Not Estimated: What the CDP Bazaar Snapshot Actually Says](https://onchainagentintel.io/blog/x402-live-population-2026-09)
+- [The Call-Weighted x402 Demand Cut: A Listing Count Is Not A Demand Count](https://onchainagentintel.io/blog/x402-call-weighted-concentration-2026-09)
+- [The x402 Catalog Churns, It Does Not Grow: A Dated Cut of the Public Coinbase CDP Bazaar Time Series](https://onchainagentintel.io/blog/x402-catalog-churn-2026-09)
+- [Google's Agent Payments Protocol (AP2) Authorizes the Transaction. It Does Not Score the Counterparty Agent.](https://onchainagentintel.io/blog/google-ap2-agent-payments-trust-gap)
+- [Cloudflare Gave Agents a Wallet. Nobody Gave Them a Way to Decide Who to Pay: The Counterparty-Quality Gap x402 Rails Do Not Close](https://onchainagentintel.io/blog/who-do-agents-pay-cloudflare-wallets-2026-08)
+- [The ERC-8004 → A2A Signpost Gap: Only 6.5% of Indexed Registrations Publish a Discoverable agent-card.json](https://onchainagentintel.io/blog/the-erc-8004-signpost-gap)
+- [ERC-8257 — OpenSea's On-Chain Agent Tool Registry, and Where Our ERC-8004 / x402 / MCP Stack Fits](https://onchainagentintel.io/blog/erc-8257-agent-tool-registry-coverage)
+- [The Trust Layer the Protocols Assume Is Already There: A Second Independent Paper Puts Our Live Data In Its Empirical Corner](https://onchainagentintel.io/blog/the-trust-layer-the-protocols-assume-is-already-there)
+- [The x402 Agent-Payments Economy Is About Ten Services: Whole-Catalog Concentration From Two Independent Sources](https://onchainagentintel.io/blog/x402-payment-concentration-the-economy-is-ten-services)
+- [Can Trustless Agents Be Trusted? Reconciling Imperial College's Frozen May Snapshot Against Our Live August ERC-8004 Data](https://onchainagentintel.io/blog/erc-8004-trust-academic-study-vs-live-data)
+- [Only a Few Percent of x402 Endpoints Have >=5 Unique Payers in 30 Days: Whole-Catalog Demand Concentration](https://onchainagentintel.io/blog/x402-demand-concentration-2026-08)
+- [The x402 Agent-Intelligence Market Map: We Scanned All 15,342 Paid Endpoints in Coinbase's x402 Bazaar](https://onchainagentintel.io/blog/x402-agent-intel-market-map-2026-08)
+- [Operational Readiness: Registered != Live != Getting Paid](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07-operational-readiness)
+- [Why We Removed BNB Chain and Went All-Ethereum: The Data Behind the Pivot](https://onchainagentintel.io/blog/why-we-went-all-ethereum-2026-07)
+- [Commerce-Backed Reputation -- the got-paid signal vs self-reported endorsements](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07-commerce-backed)
+- [Most ERC-8004 Agents Are Placeholders. Here's the Small Slice That's Actually Live](https://onchainagentintel.io/blog/erc-8004-placeholders-and-fake-reputation)
+- [Mapping an ERC-8004 Agent's Relationships On-Chain](https://onchainagentintel.io/blog/mapping-agent-relationships-onchain)
+- [How to Verify an ERC-8004 Agent Before You Trust It](https://onchainagentintel.io/blog/how-to-verify-an-erc-8004-agent)
+- [Coverage, Churn, and the Readiness Gate](https://onchainagentintel.io/blog/state-of-erc-8004-2026-07)
+- [We Indexed Nearly 20,000 Live MCP Tools. Here's What AI Agents Are Actually Building](https://onchainagentintel.io/blog/state-of-erc-8004-2026-05)
+
+### Rotating high-value per-agent pages (126)
+
+Top-ranked ERC-8004 agents on Base + Ethereum, excluding the commerce-backed cohort above. Ranking uses on-chain reputation, MCP / OpenAPI / well-known coverage, liveness, and readiness — the same signals `_agent_value_score` uses to prioritise the sitemap. The slice rotates weekly (deterministic ISO-week seed) so the AEO-visible surface drifts across the indexed set over time.
+
+- [babacan — ERC-8004 agent 46690 on Base](https://onchainagentintel.io/agents/base/46690)
+- [yilmazan — ERC-8004 agent 46694 on Base](https://onchainagentintel.io/agents/base/46694)
+- [yilmazan — ERC-8004 agent 46695 on Base](https://onchainagentintel.io/agents/base/46695)
+- [yilmazan — ERC-8004 agent 46696 on Base](https://onchainagentintel.io/agents/base/46696)
+- [babacan — ERC-8004 agent 46698 on Base](https://onchainagentintel.io/agents/base/46698)
+- [Goktug — ERC-8004 agent 46699 on Base](https://onchainagentintel.io/agents/base/46699)
+- [KairaCore — ERC-8004 agent 46703 on Base](https://onchainagentintel.io/agents/base/46703)
+- [KairaCore — ERC-8004 agent 46704 on Base](https://onchainagentintel.io/agents/base/46704)
+- [blockchil — ERC-8004 agent 46706 on Base](https://onchainagentintel.io/agents/base/46706)
+- [blockchil — ERC-8004 agent 46707 on Base](https://onchainagentintel.io/agents/base/46707)
+- [Selenn — ERC-8004 agent 46709 on Base](https://onchainagentintel.io/agents/base/46709)
+- [Selenn — ERC-8004 agent 46711 on Base](https://onchainagentintel.io/agents/base/46711)
+- [vg — ERC-8004 agent 46712 on Base](https://onchainagentintel.io/agents/base/46712)
+- [vg — ERC-8004 agent 46713 on Base](https://onchainagentintel.io/agents/base/46713)
+- [Hurrian AI — ERC-8004 agent 46714 on Base](https://onchainagentintel.io/agents/base/46714)
+- [Hurrian AI — ERC-8004 agent 46715 on Base](https://onchainagentintel.io/agents/base/46715)
+- [harites AI — ERC-8004 agent 46717 on Base](https://onchainagentintel.io/agents/base/46717)
+- [harites AI — ERC-8004 agent 46718 on Base](https://onchainagentintel.io/agents/base/46718)
+- [Drknard — ERC-8004 agent 46721 on Base](https://onchainagentintel.io/agents/base/46721)
+- [bungi — ERC-8004 agent 46722 on Base](https://onchainagentintel.io/agents/base/46722)
+- [bungi — ERC-8004 agent 46723 on Base](https://onchainagentintel.io/agents/base/46723)
+- [CYCLE Fraktal — ERC-8004 agent 46724 on Base](https://onchainagentintel.io/agents/base/46724)
+- [CYCLE Fraktal — ERC-8004 agent 46730 on Base](https://onchainagentintel.io/agents/base/46730)
+- [3 uc — ERC-8004 agent 46731 on Base](https://onchainagentintel.io/agents/base/46731)
+- [3 uc — ERC-8004 agent 46732 on Base](https://onchainagentintel.io/agents/base/46732)
+- [2 iki — ERC-8004 agent 46733 on Base](https://onchainagentintel.io/agents/base/46733)
+- [2 iki — ERC-8004 agent 46734 on Base](https://onchainagentintel.io/agents/base/46734)
+- [4dort — ERC-8004 agent 46735 on Base](https://onchainagentintel.io/agents/base/46735)
+- [crypto price chat — ERC-8004 agent 46736 on Base](https://onchainagentintel.io/agents/base/46736)
+- [crypto price chat — ERC-8004 agent 46737 on Base](https://onchainagentintel.io/agents/base/46737)
+- [4dort — ERC-8004 agent 46742 on Base](https://onchainagentintel.io/agents/base/46742)
+- [4dort — ERC-8004 agent 46743 on Base](https://onchainagentintel.io/agents/base/46743)
+- [5bes — ERC-8004 agent 46744 on Base](https://onchainagentintel.io/agents/base/46744)
+- [5bes — ERC-8004 agent 46745 on Base](https://onchainagentintel.io/agents/base/46745)
+- [Fthsln29 — ERC-8004 agent 46746 on Base](https://onchainagentintel.io/agents/base/46746)
+- [Fthsln29 — ERC-8004 agent 46747 on Base](https://onchainagentintel.io/agents/base/46747)
+- [Fthsln29 — ERC-8004 agent 46748 on Base](https://onchainagentintel.io/agents/base/46748)
+- [Fthsln29 — ERC-8004 agent 46749 on Base](https://onchainagentintel.io/agents/base/46749)
+- [Fthsln29 — ERC-8004 agent 46750 on Base](https://onchainagentintel.io/agents/base/46750)
+- [garacogal_BASE — ERC-8004 agent 46758 on Base](https://onchainagentintel.io/agents/base/46758)
+- [garacogal_BASE — ERC-8004 agent 46759 on Base](https://onchainagentintel.io/agents/base/46759)
+- [kaan205 — ERC-8004 agent 46763 on Base](https://onchainagentintel.io/agents/base/46763)
+- [kaan205 — ERC-8004 agent 46764 on Base](https://onchainagentintel.io/agents/base/46764)
+- [logicyield — ERC-8004 agent 46795 on Base](https://onchainagentintel.io/agents/base/46795)
+- [oshikuru.eth — ERC-8004 agent 46799 on Base](https://onchainagentintel.io/agents/base/46799)
+- [oshikuru.eth — ERC-8004 agent 46800 on Base](https://onchainagentintel.io/agents/base/46800)
+- [0xilhan trade agent — ERC-8004 agent 46801 on Base](https://onchainagentintel.io/agents/base/46801)
+- [0xilhan trade agent — ERC-8004 agent 46802 on Base](https://onchainagentintel.io/agents/base/46802)
+- [logicyield — ERC-8004 agent 46812 on Base](https://onchainagentintel.io/agents/base/46812)
+- [ferva45 — ERC-8004 agent 46813 on Base](https://onchainagentintel.io/agents/base/46813)
+- [ferva45 — ERC-8004 agent 46815 on Base](https://onchainagentintel.io/agents/base/46815)
+- [derfe44 — ERC-8004 agent 46816 on Base](https://onchainagentintel.io/agents/base/46816)
+- [derfe44 — ERC-8004 agent 46817 on Base](https://onchainagentintel.io/agents/base/46817)
+- [Searcher — ERC-8004 agent 46831 on Base](https://onchainagentintel.io/agents/base/46831)
+- [Ptcrypto1 — ERC-8004 agent 46834 on Base](https://onchainagentintel.io/agents/base/46834)
+- [Ptcrypto1 — ERC-8004 agent 46835 on Base](https://onchainagentintel.io/agents/base/46835)
+- [hatcoin — ERC-8004 agent 46839 on Base](https://onchainagentintel.io/agents/base/46839)
+- [hatcoin — ERC-8004 agent 46840 on Base](https://onchainagentintel.io/agents/base/46840)
+- [hunkar123 — ERC-8004 agent 46842 on Base](https://onchainagentintel.io/agents/base/46842)
+- [hunkar123 — ERC-8004 agent 46843 on Base](https://onchainagentintel.io/agents/base/46843)
+- [amedraAI — ERC-8004 agent 46850 on Base](https://onchainagentintel.io/agents/base/46850)
+- [amedraAI — ERC-8004 agent 46851 on Base](https://onchainagentintel.io/agents/base/46851)
+- [ıbocan1905 — ERC-8004 agent 46858 on Base](https://onchainagentintel.io/agents/base/46858)
+- [Normie #6602 - Jate — ERC-8004 agent 34812 on Ethereum](https://onchainagentintel.io/agents/ethereum/34812)
+- [Normie #6602 - Jate — ERC-8004 agent 34813 on Ethereum](https://onchainagentintel.io/agents/ethereum/34813)
+- [Normie #5840 - Fiis — ERC-8004 agent 34823 on Ethereum](https://onchainagentintel.io/agents/ethereum/34823)
+- [Normie #3835 - Kimi — ERC-8004 agent 34835 on Ethereum](https://onchainagentintel.io/agents/ethereum/34835)
+- [Normie #4604 - Wose — ERC-8004 agent 34836 on Ethereum](https://onchainagentintel.io/agents/ethereum/34836)
+- [Normie #4641 - Zuwen — ERC-8004 agent 34837 on Ethereum](https://onchainagentintel.io/agents/ethereum/34837)
+- [Normie #3004 - Woko — ERC-8004 agent 34838 on Ethereum](https://onchainagentintel.io/agents/ethereum/34838)
+- [Normie #2215 - Fefe — ERC-8004 agent 34844 on Ethereum](https://onchainagentintel.io/agents/ethereum/34844)
+- [Normie #5633 - Ashel — ERC-8004 agent 34846 on Ethereum](https://onchainagentintel.io/agents/ethereum/34846)
+- [Normie #5482 - Deten — ERC-8004 agent 34847 on Ethereum](https://onchainagentintel.io/agents/ethereum/34847)
+- [Normie #5723 - Iode — ERC-8004 agent 34849 on Ethereum](https://onchainagentintel.io/agents/ethereum/34849)
+- [Normie #5945 - Aiva — ERC-8004 agent 34852 on Ethereum](https://onchainagentintel.io/agents/ethereum/34852)
+- [Normie #4716 - Cumar — ERC-8004 agent 34857 on Ethereum](https://onchainagentintel.io/agents/ethereum/34857)
+- [Normie #2310 - Kevel — ERC-8004 agent 35219 on Ethereum](https://onchainagentintel.io/agents/ethereum/35219)
+- [Normie #259 - Uxme — ERC-8004 agent 35242 on Ethereum](https://onchainagentintel.io/agents/ethereum/35242)
+- [Normie #659 - Uxda — ERC-8004 agent 35261 on Ethereum](https://onchainagentintel.io/agents/ethereum/35261)
+- [Normie #9411 - Hogar — ERC-8004 agent 35264 on Ethereum](https://onchainagentintel.io/agents/ethereum/35264)
+- [Normie #1184 - Resar — ERC-8004 agent 35272 on Ethereum](https://onchainagentintel.io/agents/ethereum/35272)
+- [Normie #10 - Kela — ERC-8004 agent 35280 on Ethereum](https://onchainagentintel.io/agents/ethereum/35280)
+- [Normie #4314 - Lemel — ERC-8004 agent 35285 on Ethereum](https://onchainagentintel.io/agents/ethereum/35285)
+- [Normie #6008 - Xeos — ERC-8004 agent 35286 on Ethereum](https://onchainagentintel.io/agents/ethereum/35286)
+- [Normie #2169 - Jepar — ERC-8004 agent 35343 on Ethereum](https://onchainagentintel.io/agents/ethereum/35343)
+- [Normie #8525 - Vike — ERC-8004 agent 35344 on Ethereum](https://onchainagentintel.io/agents/ethereum/35344)
+- [Normie #6134 - Rafik — ERC-8004 agent 35404 on Ethereum](https://onchainagentintel.io/agents/ethereum/35404)
+- [Normie #8069 - Jeie — ERC-8004 agent 35436 on Ethereum](https://onchainagentintel.io/agents/ethereum/35436)
+- [Normie #7776 - Payn — ERC-8004 agent 35833 on Ethereum](https://onchainagentintel.io/agents/ethereum/35833)
+- [Normie #6798 - Himin — ERC-8004 agent 36261 on Ethereum](https://onchainagentintel.io/agents/ethereum/36261)
+- [Normie #2234 - Rape — ERC-8004 agent 36262 on Ethereum](https://onchainagentintel.io/agents/ethereum/36262)
+- [Normie #7711 - Homin — ERC-8004 agent 36303 on Ethereum](https://onchainagentintel.io/agents/ethereum/36303)
+- [Normie #9425 - Vira — ERC-8004 agent 36358 on Ethereum](https://onchainagentintel.io/agents/ethereum/36358)
+- [Normie #2449 - Caegor — ERC-8004 agent 36377 on Ethereum](https://onchainagentintel.io/agents/ethereum/36377)
+- [Normie #5407 - Elle — ERC-8004 agent 36476 on Ethereum](https://onchainagentintel.io/agents/ethereum/36476)
+- [Normie #1746 - Urra — ERC-8004 agent 36477 on Ethereum](https://onchainagentintel.io/agents/ethereum/36477)
+- [Normie #4120 - Anpar — ERC-8004 agent 36478 on Ethereum](https://onchainagentintel.io/agents/ethereum/36478)
+- [Normie #184 - Reen — ERC-8004 agent 36479 on Ethereum](https://onchainagentintel.io/agents/ethereum/36479)
+- [Normie #9098 - Hien — ERC-8004 agent 36486 on Ethereum](https://onchainagentintel.io/agents/ethereum/36486)
+- [Normie #7434 - Raant — ERC-8004 agent 36487 on Ethereum](https://onchainagentintel.io/agents/ethereum/36487)
+- [Normie #9808 - Xelo — ERC-8004 agent 36488 on Ethereum](https://onchainagentintel.io/agents/ethereum/36488)
+- [Normie #2699 - Bemin — ERC-8004 agent 36489 on Ethereum](https://onchainagentintel.io/agents/ethereum/36489)
+- [Normie #8288 - Sinel — ERC-8004 agent 36490 on Ethereum](https://onchainagentintel.io/agents/ethereum/36490)
+- [Normie #6157 - Diil — ERC-8004 agent 36502 on Ethereum](https://onchainagentintel.io/agents/ethereum/36502)
+- [Normie #2058 - Aeil — ERC-8004 agent 36556 on Ethereum](https://onchainagentintel.io/agents/ethereum/36556)
+- [Normie #4374 - Ekel — ERC-8004 agent 36559 on Ethereum](https://onchainagentintel.io/agents/ethereum/36559)
+- [Normie #8643 - Pulor — ERC-8004 agent 36578 on Ethereum](https://onchainagentintel.io/agents/ethereum/36578)
+- [Normie #917 - Walen — ERC-8004 agent 36583 on Ethereum](https://onchainagentintel.io/agents/ethereum/36583)
+- [Koalified #1683 - Nolaon — ERC-8004 agent 36589 on Ethereum](https://onchainagentintel.io/agents/ethereum/36589)
+- [Normie #1303 - Cyva — ERC-8004 agent 36591 on Ethereum](https://onchainagentintel.io/agents/ethereum/36591)
+- [Koalified #1683 - Nolaon — ERC-8004 agent 36592 on Ethereum](https://onchainagentintel.io/agents/ethereum/36592)
+- [Koalified #76 - Vosar — ERC-8004 agent 36596 on Ethereum](https://onchainagentintel.io/agents/ethereum/36596)
+- [Koalified #1112 - Kesas — ERC-8004 agent 36605 on Ethereum](https://onchainagentintel.io/agents/ethereum/36605)
+- [Koalified #1112 - Kesas — ERC-8004 agent 36606 on Ethereum](https://onchainagentintel.io/agents/ethereum/36606)
+- [Normie #1686 - Faven — ERC-8004 agent 36607 on Ethereum](https://onchainagentintel.io/agents/ethereum/36607)
+- [Normie #6244 - Hapar — ERC-8004 agent 36609 on Ethereum](https://onchainagentintel.io/agents/ethereum/36609)
+- [Koalified #607 - Orroel — ERC-8004 agent 36625 on Ethereum](https://onchainagentintel.io/agents/ethereum/36625)
+- [Koalified #512 - Lykeox — ERC-8004 agent 36629 on Ethereum](https://onchainagentintel.io/agents/ethereum/36629)
+- [Koalified #512 - Lykeox — ERC-8004 agent 36630 on Ethereum](https://onchainagentintel.io/agents/ethereum/36630)
+- [Normie #2506 - Mumik — ERC-8004 agent 36635 on Ethereum](https://onchainagentintel.io/agents/ethereum/36635)
+- [Koalified #628 - Nodox — ERC-8004 agent 36645 on Ethereum](https://onchainagentintel.io/agents/ethereum/36645)
+- [Koalified #599 - Orlior — ERC-8004 agent 36646 on Ethereum](https://onchainagentintel.io/agents/ethereum/36646)
+- [Normie #6227 - Lafel — ERC-8004 agent 36671 on Ethereum](https://onchainagentintel.io/agents/ethereum/36671)
+- [Normie #9110 - Kewen — ERC-8004 agent 36723 on Ethereum](https://onchainagentintel.io/agents/ethereum/36723)
+- [Koalified #83 - Aeveix — ERC-8004 agent 36759 on Ethereum](https://onchainagentintel.io/agents/ethereum/36759)
+- [Normie #5746 - Urmel — ERC-8004 agent 36767 on Ethereum](https://onchainagentintel.io/agents/ethereum/36767)
+<!-- END PRIORITY-ROUTING -->
+
+<!-- BEGIN AGENT-DIRECTORY -->
+
+## Per-chain paginated agent directory
+
+Every indexed ERC-8004 agent on each chain, paginated at 250 per page. Purpose-built for crawl coverage — the same KEEP set that goes in sitemap.xml, exposed as browsable index pages so nothing sits behind sitemap-only discovery.
+
+- [Base agents — directory page 1 of 10](https://onchainagentintel.io/agents/base/directory-1)
+- [Base agents — directory page 2 of 10](https://onchainagentintel.io/agents/base/directory-2)
+- [Base agents — directory page 3 of 10](https://onchainagentintel.io/agents/base/directory-3)
+- [Base agents — directory page 4 of 10](https://onchainagentintel.io/agents/base/directory-4)
+- [Base agents — directory page 5 of 10](https://onchainagentintel.io/agents/base/directory-5)
+- [Base agents — directory page 6 of 10](https://onchainagentintel.io/agents/base/directory-6)
+- [Base agents — directory page 7 of 10](https://onchainagentintel.io/agents/base/directory-7)
+- [Base agents — directory page 8 of 10](https://onchainagentintel.io/agents/base/directory-8)
+- [Base agents — directory page 9 of 10](https://onchainagentintel.io/agents/base/directory-9)
+- [Base agents — directory page 10 of 10](https://onchainagentintel.io/agents/base/directory-10)
+- [Ethereum agents — directory page 1 of 7](https://onchainagentintel.io/agents/ethereum/directory-1)
+- [Ethereum agents — directory page 2 of 7](https://onchainagentintel.io/agents/ethereum/directory-2)
+- [Ethereum agents — directory page 3 of 7](https://onchainagentintel.io/agents/ethereum/directory-3)
+- [Ethereum agents — directory page 4 of 7](https://onchainagentintel.io/agents/ethereum/directory-4)
+- [Ethereum agents — directory page 5 of 7](https://onchainagentintel.io/agents/ethereum/directory-5)
+- [Ethereum agents — directory page 6 of 7](https://onchainagentintel.io/agents/ethereum/directory-6)
+- [Ethereum agents — directory page 7 of 7](https://onchainagentintel.io/agents/ethereum/directory-7)
+<!-- END AGENT-DIRECTORY -->
+
+## Optional
+
+- [Atom feed](https://onchainagentintel.io/feed.xml): Atom 1.0 feed of every editorial post (State of ERC-8004 reports, worked examples, how-tos). Per-post real publication dates; feed `<updated>` is the newest entry's date so it is byte-stable until an editorial change lands. Suitable for newsletter ingestion, answer-engine polling, and aggregator subscription.
+- [Robots](https://onchainagentintel.io/robots.txt): crawl policy.
+- [Sitemap](https://onchainagentintel.io/sitemap.xml): sitemap for indexed human pages.

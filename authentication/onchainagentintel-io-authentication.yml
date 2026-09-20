@@ -1,0 +1,76 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/onchainagentintel-io-openapi.yml
+docs: https://onchainagentintel.io/docs#x402-flow
+description: >-
+  Account-less and key-less. The docs state "All endpoints are x402-gated. No accounts or API keys
+  required." The free /v1/public/* operations, the discovery documents and the MCP server need nothing;
+  every paid operation (tag paid-x402) answers HTTP 402 first and treats a valid x402 payment proof as the
+  credential. There is no OAuth, no OIDC, no bearer token and no user identity — the payer wallet address
+  is the only principal, and a 30-day subscription binds entitlement to that wallet
+  (wallet=<addr> query parameter). Baseline derived from the single securityScheme in the OpenAPI, upgraded
+  from the docs' Quick Start, x402 Payment Flow and USDC via EIP-3009 sections and the services page.
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+  accounts_required: false
+  api_keys_issued: false
+  oauth2: false
+  oidc: false
+schemes:
+- name: x402
+  type: apiKey
+  in: header
+  parameter: X-PAYMENT
+  description: >-
+    x402 v1 payment envelope (base64-encoded JSON). Paid endpoints return HTTP 402 with an `accepts[]`
+    list of accepted payment methods (USDC on Base/Ethereum via EIP-3009, or native ETH). Sign a payment
+    authorization matching one of those entries, base64-encode it, and retry with this header set to
+    receive the 200 response.
+  flow:
+  - Call the paid operation with no header; read the 402 body (x402Version, accepts[], payment_options[], preview, and the server-issued id such as intel_id or sub_id).
+  - Choose an accepts[] entry for a chain you can sign on (base-mainnet chainId 8453 or ethereum-mainnet chainId 1).
+  - Sign an EIP-3009 transferWithAuthorization over the USDC contract named in accepts[].asset (EIP-712 domain name "USD Coin", version "2"), with a fresh random 32-byte nonce and a validBefore of roughly 300 seconds (maxTimeoutSeconds 300).
+  - Base64-encode the x402 v1 payload and retry the identical URL and method with X-PAYMENT set; a 200 carries the paid body.
+  pay_to: '0xaCd134d2AAd0b868EDb395F7d151864188caaF1a'
+  assets:
+    base: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+    ethereum: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+  x-x402: {version: 1, settlement_networks: [base, ethereum]}
+  sources:
+  - openapi/onchainagentintel-io-openapi.yml
+  - https://onchainagentintel.io/docs#x402-flow
+  - https://onchainagentintel.io/docs#usdc-eip3009
+- name: x402-native-eth
+  type: apiKey
+  in: header
+  parameter: X-PAYMENT-TX
+  description: >-
+    Fallback documented in the provider's SKILL.md and services page, not declared in the OpenAPI: send the
+    exact ETH amount quoted in payment_options[] to the Safe with calldata `{prefix}{id}` (INTEL-, SUB-,
+    AUDIT- or EVAL-), then retry with X-PAYMENT-TX set to the transaction hash; the payment monitor fulfils
+    the request on confirmation. The 402 response also mirrors this offer in x-payment-address,
+    x-payment-amount-eth, x-payment-calldata, x-payment-chain-id and x-payment-network headers.
+  sources:
+  - https://onchainagentintel.io/skill.md
+  - https://onchainagentintel.io/services
+- name: subscription-wallet
+  type: query
+  in: query
+  parameter: wallet
+  description: >-
+    Entitlement, not authentication: after POST /v1/intel/subscribe is paid, passing wallet=<subscriber_addr>
+    on the seven covered intel operations returns 200 without a per-call payment for 30 days. Status is
+    polled free at GET /v1/intel/subscription/{sub_id} (PENDING | ACTIVE | EXPIRED).
+  sources:
+  - https://onchainagentintel.io/docs
+  - https://api.onchainagentintel.io/agent.json
+mcp:
+  endpoint: https://api.onchainagentintel.io/mcp
+  auth: none
+  protected_resource_metadata: absent (404 at /.well-known/oauth-protected-resource on the API host)
+a2a:
+  endpoint: https://api.onchainagentintel.io/a2a/v1
+  auth: a2a-x402 v0.2 payment extension (required); no securitySchemes declared in the card

@@ -1,0 +1,22 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  openapi/onchainagentintel-io-openapi.yml (GET /v1/public/badge/{chain}/{agent_id}.svg, operationId
+  public_v1_public_badge_chain_agent_id_svg_get) and a live fetch of
+  https://api.onchainagentintel.io/v1/public/badge/base/19353.svg on 2026-09-19 (HTTP 200, image/svg+xml,
+  795 bytes, aria-label "ERC-8004 · base: #19353 · Transact-ready"). No JavaScript component library, web
+  component or embedded dashboard is published; the badge is the only embeddable surface.
+description: Hosted, embeddable readiness badge — a shields-style SVG an ERC-8004 agent operator drops into a README or site to show its readiness bucket as measured by Agent Zero.
+families:
+- name: Readiness badge
+  kind: hosted-svg
+  loader: none — plain <img> / markdown image
+  components:
+  - name: ERC-8004 readiness badge
+    url_template: https://api.onchainagentintel.io/v1/public/badge/{chain}/{agent_id}.svg
+    operation: public_v1_public_badge_chain_agent_id_svg_get
+    params: {chain: base | ethereum, agent_id: integer ERC-8004 agentId}
+    renders: 'ERC-8004 · {chain}: #{agent_id} · {readiness bucket}'
+    example: https://api.onchainagentintel.io/v1/public/badge/base/19353.svg
+    free: true
+    cache: public, max-age=300 (public endpoints)

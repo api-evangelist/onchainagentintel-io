@@ -1,0 +1,122 @@
+generated: '2026-09-19'
+method: probed
+description: >-
+  Results of probing the /.well-known/ discovery surface on every host the record knows: the registrable
+  domain and www, the API host (also the OpenAPI servers[] host and the MCP server host), and the
+  app/console host. onchainagentintel.io and www answer 200 text/html with the 56,441-byte homepage SPA
+  shell for every unknown /.well-known/ path, so those 200s are recorded as present-but-not-a-document
+  and not saved. Real JSON documents were served for agent-card.json, agent.json (legacy A2A path) and
+  x402.json on the primary host, and for agent-card.json, agent.json, x402.json and agents.json on the
+  API host; no host serves security.txt, openid-configuration, oauth-authorization-server,
+  oauth-protected-resource, api-catalog or ai-plugin.json. Status is the HTTP code observed at fetch time.
+hosts:
+- host: https://onchainagentintel.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    type: text/html
+    note: SPA shell (identical to the homepage); not a security.txt; not saved.
+  - path: /.well-known/openid-configuration
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/aauth-resource.json
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/agent-card.json
+    status: 200
+    type: application/json
+    file: ../a2a/onchainagentintel-io-agent-card.json
+  - path: /.well-known/agent.json
+    status: 200
+    type: application/json
+    note: Legacy A2A path; a different, pre-0.3-shaped card (protocolVersion 0.3.0, capabilities as an array). See a2a/ manifest; not saved.
+  - path: /.well-known/x402.json
+    status: 200
+    type: application/json
+    file: onchainagentintel-io-x402.json
+- host: https://www.onchainagentintel.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/openid-configuration
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    type: text/html
+    note: SPA shell; not a document.
+  - path: /.well-known/agent-card.json
+    status: 200
+    type: application/json
+    note: Same 16,805-byte body as the primary host.
+- host: https://api.onchainagentintel.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 200
+    type: application/json
+    note: Same body as the primary host.
+  - path: /.well-known/agent.json
+    status: 200
+    type: application/json
+    note: Legacy A2A path (12,368 bytes); not saved.
+  - path: /.well-known/agents.json
+    status: 200
+    type: application/json
+    file: onchainagentintel-io-agents.json
+  - path: /.well-known/x402.json
+    status: 200
+    type: application/json
+    note: 8,034-byte variant of the primary-host manifest (same resources and prices); the primary copy is the one saved.
+- host: https://app.onchainagentintel.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404

@@ -1,0 +1,38 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  The provider publishes no dedicated changelog page (/changelog returns the homepage SPA shell). Dated
+  change statements were read from the machine-readable surfaces the provider does publish:
+  https://api.onchainagentintel.io/agent.json (service descriptions carry a dated breaking-change note),
+  https://onchainagentintel.io/.well-known/x402.json (per-resource lastUpdated), the OpenAPI info.version,
+  the MCP serverInfo, and https://onchainagentintel.io/llms.txt (measurement-window dates). The Atom feed
+  at /feed.xml is editorial (State of ERC-8004 posts), not an API changelog, and is not mirrored here.
+docs: https://onchainagentintel.io/docs
+versioning:
+  scheme: semantic manifest version + /v1 path prefix
+  current: 1.9.0
+  mcp_server_version: 1.8.0
+  detail: lifecycle/onchainagentintel-io-lifecycle.yml
+entries:
+- version: 1.9.0
+  date: null
+  latest: true
+  source: https://api.onchainagentintel.io/v1/public/openapi.json
+  highlights:
+  - info.version 1.9.0 across OpenAPI, /agent.json and the agent card (MCP server reports 1.8.0)
+  - x-codeSamples (curl / Python / TypeScript) inlined on GET /v1/intel/agent/{agent_id}
+  - RFC 8288 Link header on 402 responses of per-agent operations pointing at the free per-agent page
+- date: '2026-08-13'
+  source: https://onchainagentintel.io/.well-known/x402.json
+  highlights:
+  - x402 discovery manifest resources lastUpdated 2026-08-13T05:20:09Z (all paid resources)
+- date: '2026-07-17'
+  source: https://onchainagentintel.io/llms.txt
+  highlights:
+  - Liveness tracking begins; earlier series (back to 2026-03-12) is registrations only
+- date: '2026-07-02'
+  source: https://api.onchainagentintel.io/agent.json
+  breaking:
+  - 'Legacy `verdict` / `evaluation` fields retired from the paid agent profile'
+  - '`verdict` filter retired from POST /v1/intel/search — use `bucket` (Transact-ready | Promising | Not ready | Unrated)'
+  - 'Public agent endpoint''s `verdict` field removed in favour of `status_label` (docs)'

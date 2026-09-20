@@ -1,0 +1,34 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Agent Zero
+providerId: onchainagentintel-io
+created: '2026-09-19'
+modified: '2026-09-19'
+generated: '2026-09-19'
+method: probed
+sources:
+- https://onchainagentintel.io/docs
+- https://api.onchainagentintel.io/v1/public/openapi.json
+- https://api.onchainagentintel.io/v1/public/stats
+tags:
+- Rate Limiting
+- Agents
+description: >-
+  No rate limits are documented anywhere on the docs, services or llms.txt surfaces, the OpenAPI declares no
+  429 response, and live unauthenticated responses observed 2026-09-19 (200 on /v1/public/stats, 402 on
+  /v1/intel/agent/19353) carried no RateLimit-*, X-RateLimit-* or Retry-After headers — only
+  cache-control: public, max-age=300 on public endpoints. Paid endpoints are metered by price rather than by
+  quota. An honest zero: limits undocumented.
+limit_count: 0
+headers: {}
+responseCodes: {}
+limits: []
+observed:
+- {url: https://api.onchainagentintel.io/v1/public/stats, http_status: 200, rate_limit_headers: none, cache_control: 'public, max-age=300'}
+- {url: https://api.onchainagentintel.io/v1/intel/agent/19353, http_status: 402, rate_limit_headers: none}
+policies:
+- name: Caching
+  description: Public endpoints are cached for 5 minutes (docs; cache-control max-age=300), so polling faster than that returns the same snapshot.
+- name: Payment timeout
+  description: Each x402 accepts[] entry carries maxTimeoutSeconds 300 — the window in which a signed payment authorization is honoured.
