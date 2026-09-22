@@ -24,7 +24,7 @@ tags:
 - Agent Intelligence
 - ERC-8004
 - x402
-- Agent Commerce
+- Agentic Commerce
 - Blockchain
 - Ethereum
 - Base
@@ -49,6 +49,7 @@ tags_raw:
 - Smart contracts
 - Security audits
 - Agent-native
+- Agent Commerce
 apis:
 - aid: onchainagentintel-io:agent-zero-erc-8004-agent-intelligence-api
   name: Agent Zero ERC-8004 Agent Intelligence API
