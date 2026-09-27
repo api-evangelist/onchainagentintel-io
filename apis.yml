@@ -33,7 +33,7 @@ tags:
 - A2A
 - Smart Contracts
 - Security Audits
-- agent-native
+- Agent-Native
 tags_raw:
 - Agents
 - Agent intelligence
@@ -50,40 +50,77 @@ tags_raw:
 - Security audits
 - Agent-native
 - Agent Commerce
+- agent-native
 apis:
-- aid: onchainagentintel-io:agent-zero-erc-8004-agent-intelligence-api
-  name: Agent Zero ERC-8004 Agent Intelligence API
+- aid: onchainagentintel-io:agent-zero-mcp-server
+  name: Agent Zero MCP Server
   description: >-
-    REST API for ERC-8004 agent intelligence on Base and Ethereum. Free public operations (coverage stats,
-    leaderboards, per-agent objective signals, capability and chain roll-ups, citable datasets, an embeddable
-    readiness badge, and the discovery documents) answer without payment; the paid x402 operations — agent
-    profile, capability search, trending, peers, market map, ecosystem delta, full payment graph, a 30-day
-    flat-rate subscription, Solidity security audit and ERC-8183 evaluation — return HTTP 402 with a free
-    counts-only preview and settle in USDC (EIP-3009 X-PAYMENT) or native ETH. 25 operations, OpenAPI 3.1.0
-    published at https://api.onchainagentintel.io/v1/public/openapi.json with servers[]
-    https://api.onchainagentintel.io; Redoc at /v1/public/docs.
+    Free, anonymous remote Model Context Protocol server at https://api.onchainagentintel.io/mcp (Streamable
+    HTTP, protocol version 2025-06-18, serverInfo agent-zero-intel 1.8.0). tools/list answers without
+    credentials with four read-only, counts-only tools — get_coverage_stats, get_leaderboards, get_agent_summary
+    and get_network_teaser — each carrying a real inputSchema and an upgrade pointer to the paid x402
+    REST endpoint that returns the enriched data. prompts/list and resources/list return empty arrays;
+    a request without Accept text/event-stream is refused with 406.
+  humanURL: https://onchainagentintel.io/docs
+  baseURL: https://api.onchainagentintel.io/mcp
+  tags:
+  - MCP
+  - Agent-Native
+  - Agent Intelligence
+  tags_raw:
+  - MCP
+  - agent-native
+  - Agent Intelligence
+  properties:
+  - type: MCPServer
+    url: mcp/onchainagentintel-io-mcp.yml
+  - type: MCPServer
+    name: MCP endpoint (Streamable HTTP)
+    url: https://api.onchainagentintel.io/mcp
+  - type: ToolCrosswalk
+    url: mcp/onchainagentintel-io-tool-crosswalk.yml
+- aid: onchainagentintel-io:agent-zero-a2a-agent
+  name: Agent Zero A2A Agent
+  description: >-
+    Agent2Agent surface: an agent card served from https://onchainagentintel.io/.well-known/agent-card.json
+    (mirrored on www and api hosts) naming the JSON-RPC endpoint https://api.onchainagentintel.io/a2a/v1
+    and sixteen skills — x402 settlement, the free MCP server, the nine paid intel services, smart-contract
+    audit, ERC-8183 evaluation and the free public surfaces — under a required a2a-x402 v0.2 payment extension
+    settled to a Safe on Base or Ethereum. The card carries capabilities as an object and skills as an
+    array but no top-level protocolVersion, so it grades flavored against A2A 1.0.0; the legacy /.well-known/agent.json
+    declares protocolVersion 0.3.0. Streaming and push notifications are declared unsupported.
+  humanURL: https://onchainagentintel.io/docs
+  baseURL: https://api.onchainagentintel.io/a2a/v1
+  tags:
+  - A2A
+  - Agent-Native
+  - x402
+  tags_raw:
+  - A2A
+  - agent-native
+  - x402
+  properties:
+  - type: AgentCard
+    url: a2a/onchainagentintel-io-a2a.yml
+  - type: AgentCard
+    name: A2A Agent Card (provider-hosted)
+    url: https://onchainagentintel.io/.well-known/agent-card.json
+- aid: onchainagentintel-io:onchainagentintel-io-paid-x402-api
+  name: Agent Zero Paid X402 API
+  description: Paid endpoints — settle with X-PAYMENT header per x402.
   humanURL: https://onchainagentintel.io/docs
   baseURL: https://api.onchainagentintel.io
   tags:
-  - Agents
-  - Agent Intelligence
-  - ERC-8004
-  - x402
-  - Smart Contracts
+  - paid-x402
   properties:
   - type: OpenAPI
-    url: openapi/onchainagentintel-io-openapi.yml
-  - type: OpenAPI
-    name: OpenAPI (provider-hosted)
-    url: https://api.onchainagentintel.io/v1/public/openapi.json
+    url: openapi/onchainagentintel-io-paid-x402-api-openapi.yml
   - type: Documentation
     url: https://onchainagentintel.io/docs
   - type: APIReference
     url: https://api.onchainagentintel.io/v1/public/docs
   - type: GettingStarted
     url: https://onchainagentintel.io/docs#quickstart
-  - type: Overlay
-    url: overlays/onchainagentintel-io-openapi-overlay.yaml
   - type: Authentication
     url: authentication/onchainagentintel-io-authentication.yml
   - type: Conventions
@@ -106,62 +143,54 @@ apis:
     url: plans/onchainagentintel-io-plans-pricing.yml
   - type: RateLimits
     url: rate-limits/onchainagentintel-io-rate-limits.yml
-  - type: AgentSkill
-    url: skills/_index.yml
-  - type: AgentSkill
-    name: Provider-published SKILL.md
-    url: https://onchainagentintel.io/.agents/skills/onchain-agent-intel/SKILL.md
-- aid: onchainagentintel-io:agent-zero-mcp-server
-  name: Agent Zero MCP Server
-  description: >-
-    Free, anonymous remote Model Context Protocol server at https://api.onchainagentintel.io/mcp (Streamable
-    HTTP, protocol version 2025-06-18, serverInfo agent-zero-intel 1.8.0). tools/list answers without
-    credentials with four read-only, counts-only tools — get_coverage_stats, get_leaderboards,
-    get_agent_summary and get_network_teaser — each carrying a real inputSchema and an upgrade pointer to the
-    paid x402 REST endpoint that returns the enriched data. prompts/list and resources/list return empty
-    arrays; a request without Accept text/event-stream is refused with 406.
+- aid: onchainagentintel-io:onchainagentintel-io-public-api
+  name: Agent Zero Public API
+  description: Free endpoints — no payment, no auth.
   humanURL: https://onchainagentintel.io/docs
-  baseURL: https://api.onchainagentintel.io/mcp
+  baseURL: https://api.onchainagentintel.io
   tags:
-  - MCP
-  - agent-native
-  - Agent Intelligence
+  - public
   properties:
-  - type: MCPServer
-    url: mcp/onchainagentintel-io-mcp.yml
-  - type: MCPServer
-    name: MCP endpoint (Streamable HTTP)
-    url: https://api.onchainagentintel.io/mcp
-  - type: ToolCrosswalk
-    url: mcp/onchainagentintel-io-tool-crosswalk.yml
-- aid: onchainagentintel-io:agent-zero-a2a-agent
-  name: Agent Zero A2A Agent
-  description: >-
-    Agent2Agent surface: an agent card served from https://onchainagentintel.io/.well-known/agent-card.json
-    (mirrored on www and api hosts) naming the JSON-RPC endpoint https://api.onchainagentintel.io/a2a/v1 and
-    sixteen skills — x402 settlement, the free MCP server, the nine paid intel services, smart-contract audit,
-    ERC-8183 evaluation and the free public surfaces — under a required a2a-x402 v0.2 payment extension settled
-    to a Safe on Base or Ethereum. The card carries capabilities as an object and skills as an array but no
-    top-level protocolVersion, so it grades flavored against A2A 1.0.0; the legacy /.well-known/agent.json
-    declares protocolVersion 0.3.0. Streaming and push notifications are declared unsupported.
-  humanURL: https://onchainagentintel.io/docs
-  baseURL: https://api.onchainagentintel.io/a2a/v1
-  tags:
-  - A2A
-  - agent-native
-  - x402
-  properties:
-  - type: AgentCard
-    url: a2a/onchainagentintel-io-a2a.yml
-  - type: AgentCard
-    name: A2A Agent Card (provider-hosted)
-    url: https://onchainagentintel.io/.well-known/agent-card.json
+  - type: OpenAPI
+    url: openapi/onchainagentintel-io-public-api-openapi.yml
+  - type: Documentation
+    url: https://onchainagentintel.io/docs
+  - type: APIReference
+    url: https://api.onchainagentintel.io/v1/public/docs
+  - type: GettingStarted
+    url: https://onchainagentintel.io/docs#quickstart
+  - type: Authentication
+    url: authentication/onchainagentintel-io-authentication.yml
+  - type: Conventions
+    url: conventions/onchainagentintel-io-conventions.yml
+  - type: Idempotency
+    url: conventions/onchainagentintel-io-conventions.yml
+  - type: ErrorCatalog
+    url: errors/onchainagentintel-io-problem-types.yml
+  - type: Lifecycle
+    url: lifecycle/onchainagentintel-io-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/onchainagentintel-io-changelog.yml
+  - type: Conformance
+    url: conformance/onchainagentintel-io-conformance.yml
+  - type: DataModel
+    url: data-model/onchainagentintel-io-data-model.yml
+  - type: Components
+    url: components/onchainagentintel-io-components.yml
+  - type: Plans
+    url: plans/onchainagentintel-io-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/onchainagentintel-io-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/onchainagentintel-io-openapi-overlay.yaml
+- type: AgentSkill
+  url: https://onchainagentintel.io/.agents/skills/onchain-agent-intel/SKILL.md
 - type: DomainSecurity
   url: security/onchainagentintel-io-domain-security.yml
 - type: Website
@@ -198,3 +227,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 23
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://onchainagentintel.io/.well-known/agent-card.json"
+  grade: "flavored"
+  protocol_version: "2.0"
+  control: 200

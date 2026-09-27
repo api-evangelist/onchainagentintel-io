@@ -1,0 +1,25 @@
+{
+  "provider": "onchainagentintel-io",
+  "sources": [
+    "_original/onchainagentintel-io-openapi.json",
+    "onchainagentintel-io-openapi.yml"
+  ],
+  "outputs": [
+    "onchainagentintel-io-paid-x402-api-openapi.yml",
+    "onchainagentintel-io-public-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/onchainagentintel-io-openapi.yml"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "onchainagentintel-io-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "onchainagentintel-io-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tag 'paid-x402' spans 2 source specs (onchainagentintel-io-openapi.json, onchainagentintel-io-openapi.yml): per-path servers applied",
+    "tag 'public' spans 2 source specs (onchainagentintel-io-openapi.json, onchainagentintel-io-openapi.yml): per-path servers applied",
+    "apis.yml register: written (+2 apis, 4 total)"
+  ],
+  "skipped": []
+}

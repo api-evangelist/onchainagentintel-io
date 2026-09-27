@@ -1,0 +1,376 @@
+openapi: 3.2.0
+info:
+  title: Onchainagentintel Io Public API
+  version: 1.9.0
+  contact:
+    name: Agent Zero
+    url: https://onchainagentintel.io
+  license:
+    name: Public API — no license claim
+    url: https://onchainagentintel.io/docs
+  description: 'Operations tagged public across 2 of this provider''s published API definitions: onchainagentintel-io-openapi.json, onchainagentintel-io-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.onchainagentintel.io
+  description: Public API
+tags:
+- name: Public
+  description: Free endpoints — no payment, no auth.
+paths:
+  /v1/public/stats:
+    get:
+      tags:
+      - Public
+      summary: Aggregate ecosystem stats (counts only, no PII)
+      operationId: public_v1_public_stats_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/leaderboards:
+    get:
+      tags:
+      - Public
+      summary: Free leaderboards (top MCP / OpenAPI / most-recent)
+      operationId: public_v1_public_leaderboards_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/agent/{chain}/{agent_id}:
+    get:
+      tags:
+      - Public
+      summary: Free counts-only detail for one agent
+      operationId: public_v1_public_agent_chain_agent_id_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      parameters:
+      - name: chain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - base
+          - ethereum
+      - name: agent_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: ERC-8004 agentId
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/capability/{slug}:
+    get:
+      tags:
+      - Public
+      summary: Stamped-readiness agents matching a capability slug
+      operationId: public_v1_public_capability_slug_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          maxLength: 40
+        description: Lowercase capability slug (e.g. `defi`, `trading`).
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/chain/{chain}:
+    get:
+      tags:
+      - Public
+      summary: Stamped-readiness agents on a chain (base|ethereum)
+      operationId: public_v1_public_chain_chain_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      parameters:
+      - name: chain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - base
+          - ethereum
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/badge/{chain}/{agent_id}.svg:
+    get:
+      tags:
+      - Public
+      summary: Embeddable ERC-8004 verification badge (SVG)
+      operationId: public_v1_public_badge_chain_agent_id_svg_get
+      responses:
+        '200':
+          description: Success
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+      parameters:
+      - name: chain
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - base
+          - ethereum
+      - name: agent_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+        description: ERC-8004 agentId
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/datasets:
+    get:
+      tags:
+      - Public
+      summary: Machine-readable index of every citable dataset we publish (CC BY 4.0)…
+      operationId: public_v1_public_datasets_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/datasets/{slug}:
+    get:
+      tags:
+      - Public
+      summary: One citable dataset descriptor by slug (commerce-backed|chain-liveness|signpost…
+      operationId: public_v1_public_datasets_slug_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+          - commerce-backed
+          - chain-liveness
+          - signpost-gap
+          - x402-bazaar
+        description: Dataset slug — one of the enumerated citable datasets.
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/openapi.json:
+    get:
+      tags:
+      - Public
+      summary: Curated OpenAPI 3.1 spec (public + paid endpoints)
+      operationId: public_v1_public_openapi_json_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /v1/public/docs:
+    get:
+      tags:
+      - Public
+      summary: Human-readable API docs (Redoc renders the OpenAPI spec)
+      operationId: public_v1_public_docs_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /agent.json:
+    get:
+      tags:
+      - Public
+      summary: Agent Zero's ERC-8004 tokenURI manifest (JSON)
+      operationId: public_agent_json_get
+      responses:
+        '200':
+          description: ERC-8004 tokenURI manifest
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /.well-known/agent-card.json:
+    get:
+      tags:
+      - Public
+      summary: A2A/ERC-8004 AgentCard (well-known path)
+      operationId: public_well_known_agent_card_get
+      responses:
+        '200':
+          description: A2A/ERC-8004 AgentCard
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /.well-known/agents.json:
+    get:
+      tags:
+      - Public
+      summary: Plural A2A/ERC-8004 multi-agent manifest — array form enumerated by agent…
+      operationId: public__well-known_agents_json_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /mcp:
+    post:
+      tags:
+      - Public
+      summary: Free MCP server (4 read-only tools + x402 upsell)
+      description: JSON-RPC 2.0 endpoint speaking the Model Context Protocol. Exposes read-only ecosystem stats and free leaderboards; paid intel lookups return an x402 upsell pointing at /v1/intel/*. Free — no X-PAYMENT header required.
+      operationId: public_mcp_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - jsonrpc
+              - method
+              properties:
+                jsonrpc:
+                  type: string
+                  example: '2.0'
+                method:
+                  type: string
+                  example: tools/list
+                params:
+                  type: object
+                  additionalProperties: true
+                id:
+                  oneOf:
+                  - type: string
+                  - type: integer
+      responses:
+        '200':
+          description: JSON-RPC 2.0 response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+  /.well-known/x402.json:
+    get:
+      tags:
+      - Public
+      summary: x402 v2 payment-discovery manifest — every paid endpoint's accepts[], pricing…
+      operationId: public__well-known_x402_json_get
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://api.onchainagentintel.io
+      description: Public API
+components:
+  securitySchemes:
+    x402:
+      type: apiKey
+      in: header
+      name: X-PAYMENT
+      description: x402 payment envelope (base64-encoded JSON). Paid endpoints return HTTP 402 with an `accepts[]` list of accepted payment methods (USDC on Base/Ethereum via EIP-3009, or native ETH). Sign a payment authorization matching one of those entries, base64-encode it, and retry with this header set to receive the 200 response. See https://onchainagentintel.io/docs and https://api.onchainagentintel.io/agent.json for the full flow.
+      x-x402:
+        version: 1
+        settlement_networks:
+        - base
+        - ethereum
+        pay_to: '0xaCd134d2AAd0b868EDb395F7d151864188caaF1a'
+externalDocs:
+  description: Human docs, pricing, payment flow.
+  url: https://onchainagentintel.io/docs
+x-refined-from:
+- onchainagentintel-io-openapi.json
+- onchainagentintel-io-openapi.yml

@@ -1,3 +1,5 @@
+# x-archived-from: onchainagentintel-io-openapi.yml
+# x-archived-on: 2026-09-26
 # Verbatim YAML rendering of https://api.onchainagentintel.io/v1/public/openapi.json
 # fetched 2026-09-19 (HTTP 200, application/json). Content unchanged; source JSON kept in _original/.
 openapi: 3.1.0
