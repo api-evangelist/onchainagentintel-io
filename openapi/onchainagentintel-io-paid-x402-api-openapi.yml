@@ -1,14 +1,15 @@
 openapi: 3.2.0
 info:
-  title: Onchainagentintel Io Paid X402 API
+  title: Agent Zero — ERC-8004 Agent Readiness & Trust intelligence…
   version: 1.9.0
+  summary: 'Machine-discoverable API for the ERC-8004 agent economy on Base and Ethereum — a trust filter over the on-chain registry: indexes registered agents, enriches with live endpoint probes and payment activity, and scores each for readiness and trust.'
+  description: Curated public spec covering (a) the free `/v1/public/*` and discovery surfaces (`/agent.json`, `/.well-known/agent-card.json`, `/mcp`) and (b) the paid x402 intelligence endpoints (`/v1/intel/*`, `/v1/audit`, `/v1/evaluate`).
   contact:
     name: Agent Zero
     url: https://onchainagentintel.io
   license:
     name: Public API — no license claim
     url: https://onchainagentintel.io/docs
-  description: 'Operations tagged paid-x402 across 2 of this provider''s published API definitions: onchainagentintel-io-openapi.json, onchainagentintel-io-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://api.onchainagentintel.io
   description: Public API
@@ -128,9 +129,6 @@ paths:
       - lang: TypeScript
         label: TypeScript
         source: "// quickstart-x402.ts — make your first paid call ($0.10 USDC on Base).\n// Deps:   npm i viem\n// Wallet: needs >= $0.10 USDC on Base. NO gas (server pays).\n// Key:    set X402_TEST_PRIVATE_KEY — never commit a real key.\nimport { privateKeyToAccount } from \"viem/accounts\";\nimport { toHex } from \"viem\";\n\nconst URL = \"https://api.onchainagentintel.io/v1/intel/agent/19353\";\n\n// 1) Unpaid — get the 402 challenge.\nconst r1 = await fetch(URL);\nif (r1.status !== 402) throw new Error(`expected 402, got ${r1.status}`);\nconst challenge = await r1.json();\nconst accept   = challenge.accepts.find((a: any) => a.network === \"base-mainnet\");\n// accept: scheme=\"exact\", payTo=<Safe>, asset=<USDC on Base>,\n//         maxAmountRequired=\"100000\" ($0.10 USDC).\n\n// 2) Sign an EIP-3009 transferWithAuthorization off-chain.\nconst account = privateKeyToAccount(\n  process.env.X402_TEST_PRIVATE_KEY as `0x${string}`,  // PLACEHOLDER\n);\nconst nonceBytes = crypto.getRandomValues(new Uint8Array(32));\nconst nonce      = toHex(nonceBytes);\nconst now         = Math.floor(Date.now() / 1000);\nconst validBefore = BigInt(now + 600);\nconst authorization = {\n  from:        account.address,\n  to:          accept.payTo,\n  value:       BigInt(accept.maxAmountRequired),\n  validAfter:  0n,\n  validBefore,\n  nonce,\n} as const;\nconst signature = await account.signTypedData({\n  domain: {\n    name:              accept.extra.name,\n    version:           accept.extra.version,\n    chainId:           8453,\n    verifyingContract: accept.asset,\n  },\n  types: {\n    TransferWithAuthorization: [\n      { name: \"from\",        type: \"address\" },\n      { name: \"to\",          type: \"address\" },\n      { name: \"value\",       type: \"uint256\" },\n      { name: \"validAfter\",  type: \"uint256\" },\n      { name: \"validBefore\", type: \"uint256\" },\n      { name: \"nonce\",       type: \"bytes32\" },\n    ],\n  },\n  primaryType: \"TransferWithAuthorization\",\n  message: authorization,\n});\n\n// 3) Retry with X-PAYMENT (base64-encoded x402 envelope) — get 200.\nconst envelope = {\n  x402Version: 1,\n  scheme:  \"exact\",\n  network: \"base-mainnet\",\n  payload: {\n    authorization: {\n      from: authorization.from,\n      to:   authorization.to,\n      value:       accept.maxAmountRequired,\n      validAfter:  0,\n      validBefore: Number(validBefore),\n      nonce,\n    },\n    signature,\n  },\n};\nconst header = Buffer.from(JSON.stringify(envelope)).toString(\"base64\");\nconst r2 = await fetch(URL, { headers: { \"X-PAYMENT\": header } });\nconsole.log(r2.status, (await r2.json()).x402);\n// -> 200 { settled: true, tx: \"0x...\" }\n// `.result` on the paid response carries the opaque paid intel (buyer-gated).\n"
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/search:
     post:
       tags:
@@ -168,9 +166,6 @@ paths:
               type: object
               additionalProperties: true
         description: Optional JSON body. See https://onchainagentintel.io/docs for per-endpoint body fields.
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/trending:
     get:
       tags:
@@ -207,9 +202,6 @@ paths:
         description: string (optional) — 0x-prefixed payer address. If you have an active /v1/intel/subscribe subscription, pass it to bypass per-call payment.
         schema:
           type: string
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/peers/{agent_id}:
     get:
       tags:
@@ -259,9 +251,6 @@ paths:
         description: string (optional) — 0x-prefixed payer address. If you have an active subscription, pass it to bypass per-call payment.
         schema:
           type: string
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/market:
     get:
       tags:
@@ -298,9 +287,6 @@ paths:
         description: string (optional) — 0x-prefixed payer address. If you have an active subscription, pass it to bypass per-call payment.
         schema:
           type: string
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/delta:
     get:
       tags:
@@ -343,9 +329,6 @@ paths:
         description: string (optional) — 0x-prefixed payer address. If you have an active subscription, pass it to bypass per-call payment.
         schema:
           type: string
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/graph:
     get:
       tags:
@@ -382,9 +365,6 @@ paths:
         description: string (optional) — 0x-prefixed payer address. If you have an active subscription, pass it to bypass per-call payment.
         schema:
           type: string
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/intel/subscribe:
     post:
       tags:
@@ -422,9 +402,6 @@ paths:
               type: object
               additionalProperties: true
         description: Optional JSON body. See https://onchainagentintel.io/docs for per-endpoint body fields.
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/audit:
     post:
       tags:
@@ -462,9 +439,6 @@ paths:
               type: object
               additionalProperties: true
         description: Optional JSON body. See https://onchainagentintel.io/docs for per-endpoint body fields.
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
   /v1/evaluate:
     post:
       tags:
@@ -502,9 +476,6 @@ paths:
               type: object
               additionalProperties: true
         description: Optional JSON body. See https://onchainagentintel.io/docs for per-endpoint body fields.
-    servers:
-    - url: https://api.onchainagentintel.io
-      description: Public API
 components:
   responses:
     PaymentRequired:
@@ -605,6 +576,3 @@ components:
 externalDocs:
   description: Human docs, pricing, payment flow.
   url: https://onchainagentintel.io/docs
-x-refined-from:
-- onchainagentintel-io-openapi.json
-- onchainagentintel-io-openapi.yml
