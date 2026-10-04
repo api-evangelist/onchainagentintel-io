@@ -149,6 +149,8 @@ apis:
   humanURL: https://onchainagentintel.io/docs
   baseURL: https://api.onchainagentintel.io
   tags:
+  - Public
+  tags_raw:
   - public
   properties:
   - type: OpenAPI
