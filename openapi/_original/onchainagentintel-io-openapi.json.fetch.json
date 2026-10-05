@@ -1,0 +1,12 @@
+{
+ "url": "https://api.onchainagentintel.io/v1/public/openapi.json",
+ "requested_url": "https://api.onchainagentintel.io/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 34918,
+ "sha256": "13607d5737e9e4dafc52246b10f2ebe3ef001d457450b309b74d7fdbb076f788",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
