@@ -189,6 +189,10 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Plans
+  url: plans/onchainagentintel-io-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/onchainagentintel-io-rate-limits.yml
 - type: Overlay
   url: overlays/onchainagentintel-io-openapi-overlay.yaml
 - type: AgentSkill
