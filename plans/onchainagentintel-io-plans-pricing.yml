@@ -78,3 +78,43 @@ plans:
   currency: USD
   source: https://app.onchainagentintel.io/app/dataset-licence
   description: Institutional licence to the underlying measurement store; enquiry-led, no listed price.
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  - negotiated
+  - subscription
+  units: []
+  plans:
+  - name: Free
+    access: free
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Per-call x402
+    access: other
+    model: metered
+    model_how: stated
+    units: []
+    periods: []
+  - name: 30-Day Subscription (x402)
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []
+  - name: Pro
+    access: other
+    model: subscription
+    model_how: stated
+    units: []
+    periods: []
+  - name: Dataset licence
+    access: enterprise
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
