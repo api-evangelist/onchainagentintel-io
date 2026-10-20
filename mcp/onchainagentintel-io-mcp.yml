@@ -2,15 +2,14 @@ generated: '2026-09-19'
 method: probed
 status: published
 source: https://api.onchainagentintel.io/mcp
-description: >-
-  Agent Zero operates a free, anonymous remote MCP server at https://api.onchainagentintel.io/mcp
-  (Streamable HTTP; a GET or a POST without Accept text/event-stream returns 406 -32600 "Client must
-  accept text/event-stream"). initialize answered with protocolVersion 2025-06-18 and serverInfo
-  agent-zero-intel 1.8.0; tools/list returned four read-only tools with real inputSchema, saved
-  verbatim to onchainagentintel-io-mcp-tools.json; prompts/list and resources/list both return empty
-  arrays. Every tool response carries an `unlock`/`upgrade` block pointing at the paid x402
-  /v1/intel/* REST endpoint. The server is advertised in the agent card (x-mcp-servers), the root
-  manifest (/agent.json mcpServers[]) and the OpenAPI (POST /mcp, operationId public_mcp_post).
+description: Agent Zero operates a free, anonymous remote MCP server at https://api.onchainagentintel.io/mcp
+  (Streamable HTTP; a GET or a POST without Accept text/event-stream returns 406 -32600 "Client must accept
+  text/event-stream"). initialize answered with protocolVersion 2025-06-18 and serverInfo agent-zero-intel
+  1.8.0; tools/list returned four read-only tools with real inputSchema, saved verbatim to onchainagentintel-io-mcp-tools.json;
+  prompts/list and resources/list both return empty arrays. Every tool response carries an `unlock`/`upgrade`
+  block pointing at the paid x402 /v1/intel/* REST endpoint. The server is advertised in the agent card
+  (x-mcp-servers), the root manifest (/agent.json mcpServers[]) and the OpenAPI (POST /mcp, operationId
+  public_mcp_post).
 deployment:
   mode: remote
   endpoint: https://api.onchainagentintel.io/mcp
@@ -26,33 +25,84 @@ server:
   protocol_version: '2025-06-18'
   auth: none
   capabilities:
-    tools: {listChanged: false}
-    prompts: {listChanged: false}
-    resources: {subscribe: false, listChanged: false}
-  instructions: >-
-    Agent Zero — free ERC-8004 agent-intelligence tools across Base and Ethereum. Coverage stats,
-    capability leaderboards, per-agent objective signals, and a teaser of the on-chain agent-to-agent
-    payment graph. Every tool is free and returns counts/coverage only; each response includes an
-    `upgrade` pointer to the paid x402 endpoint that returns the full enriched data.
+    tools:
+      listChanged: false
+    prompts:
+      listChanged: false
+    resources:
+      subscribe: false
+      listChanged: false
+  instructions: Agent Zero — free ERC-8004 agent-intelligence tools across Base and Ethereum. Coverage
+    stats, capability leaderboards, per-agent objective signals, and a teaser of the on-chain agent-to-agent
+    payment graph. Every tool is free and returns counts/coverage only; each response includes an `upgrade`
+    pointer to the paid x402 endpoint that returns the full enriched data.
 tools_file: onchainagentintel-io-mcp-tools.json
 tools:
 - name: get_coverage_stats
-  description: Live coverage of the ERC-8004 agent economy across Base and Ethereum — counts only (agents indexed, live MCP/OpenAPI/well-known surfaces, tools and methods observed, contracts verified, per-chain breakdown). Paid counterpart GET /v1/intel/market.
+  description: Live coverage of the ERC-8004 agent economy across Base and Ethereum — counts only (agents
+    indexed, live MCP/OpenAPI/well-known surfaces, tools and methods observed, contracts verified, per-chain
+    breakdown). Paid counterpart GET /v1/intel/market.
   input: {}
 - name: get_leaderboards
-  description: Top ERC-8004 agents by live MCP tool count, by OpenAPI method count, and most recently indexed — names and counts only. Paid counterpart GET /v1/intel/trending.
+  description: Top ERC-8004 agents by live MCP tool count, by OpenAPI method count, and most recently
+    indexed — names and counts only. Paid counterpart GET /v1/intel/trending.
   input: {}
 - name: get_agent_summary
   description: Objective, counts-only signals for one ERC-8004 agent. Paid counterpart GET /v1/intel/agent/{agent_id}.
-  input: {chain: 'string — "base" | "ethereum"', agent_id: integer}
+  input:
+    chain: string — "base" | "ethereum"
+    agent_id: integer
 - name: get_network_teaser
-  description: A capped teaser of the on-chain agent-to-agent payment graph (nodes + edges). Paid counterpart GET /v1/intel/graph.
+  description: A capped teaser of the on-chain agent-to-agent payment graph (nodes + edges). Paid counterpart
+    GET /v1/intel/graph.
   input: {}
 x-evidence:
-  initialize: {http_status: 200, content_type: text/event-stream, fetched: '2026-09-19'}
-  tools_list: {http_status: 200, content_type: text/event-stream, tools: 4, fetched: '2026-09-19'}
-  prompts_list: {http_status: 200, prompts: 0}
-  resources_list: {http_status: 200, resources: 0}
-  get_without_accept: {http_status: 406, error_code: -32600}
-  well_known_oauth_protected_resource: {url: https://api.onchainagentintel.io/.well-known/oauth-protected-resource, http_status: 404}
-  well_known_oauth_authorization_server: {url: https://api.onchainagentintel.io/.well-known/oauth-authorization-server, http_status: 404}
+  initialize:
+    http_status: 200
+    content_type: text/event-stream
+    fetched: '2026-09-19'
+  tools_list:
+    http_status: 200
+    content_type: text/event-stream
+    tools: 4
+    fetched: '2026-09-19'
+  prompts_list:
+    http_status: 200
+    prompts: 0
+  resources_list:
+    http_status: 200
+    resources: 0
+  get_without_accept:
+    http_status: 406
+    error_code: -32600
+  well_known_oauth_protected_resource:
+    url: https://api.onchainagentintel.io/.well-known/oauth-protected-resource
+    http_status: 404
+  well_known_oauth_authorization_server:
+    url: https://api.onchainagentintel.io/.well-known/oauth-authorization-server
+    http_status: 404
+tool_quality:
+  tool_count: 6
+  tokens_total: 2031
+  tokens_per_tool_median: 335
+  heavy_tools: []
+  heavy_tool_count: 0
+  params_total: 6
+  params_undescribed: 6
+  params_described_pct: 0.0
+  tools_with_undescribed_params: 3
+  tools_annotated: 0
+  annotated_pct: 0.0
+  state_changing_unhinted: []
+  tools_missing_schema: 0
+  short_descriptions: 0
+  duplicate_descriptions: 0
+  duplicate_names: 0
+  nonportable_names: []
+  output_schema_count: 0
+  token_estimate: chars/3.6 of each compact tool definition
+  source: mcp/onchainagentintel-io-mcp-tools.json
+  measured: '2026-10-20'
+  scored: false
+  note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
+    from Glimind's agent-readiness audit.
