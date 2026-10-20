@@ -39,23 +39,96 @@ server:
 tools_file: onchainagentintel-io-mcp-tools.json
 tools:
 - name: get_coverage_stats
-  description: Live coverage of the ERC-8004 agent economy across Base and Ethereum — counts only (agents
-    indexed, live MCP/OpenAPI/well-known surfaces, tools and methods observed, contracts verified, per-chain
-    breakdown). Paid counterpart GET /v1/intel/market.
+  description: 'Live coverage of the ERC-8004 agent economy across Base and Ethereum.
+
+
+    Returns counts only: how many agents are indexed, how many expose a live MCP server / OpenAPI / well-known
+    card, total MCP tools and OpenAPI methods observed, contracts verified, EOAs and owners identified,
+    plus a per-chain breakdown. No names, addresses, or handles. Use this to size the market and see where
+    capability density is growing.
+
+
+    Paid counterpart: `GET /v1/intel/market` (x402, USDC on base-mainnet) returns the full capability
+    market map — which capabilities are saturated vs open, per-capability agent lists, and momentum. Every
+    response from this free tool carries an `unlock` block with the exact paid endpoint, price, and payment
+    discovery.'
   input: {}
 - name: get_leaderboards
-  description: Top ERC-8004 agents by live MCP tool count, by OpenAPI method count, and most recently
-    indexed — names and counts only. Paid counterpart GET /v1/intel/trending.
+  description: 'Top ERC-8004 agents by live capability, plus the most recently indexed.
+
+
+    Three ranked lists — top by live MCP tool count, top by OpenAPI method count, and most-recently indexed
+    — each with agent_id, chain, public name, a shareable detail URL, and the relevant count. Names and
+    counts only: no owner wallets, handles, or endpoint URLs. Use this to find the most capable / most
+    active agents to integrate or watch.
+
+
+    Paid counterpart: `GET /v1/intel/trending` (x402, USDC on base-mainnet) returns trending intel — top
+    earners, fastest-rising agents, and integration candidates ranked with the signals behind the ranking.
+    Every response from this free tool carries an `unlock` block with the exact paid endpoint, price,
+    and payment discovery.'
   input: {}
 - name: get_agent_summary
-  description: Objective, counts-only signals for one ERC-8004 agent. Paid counterpart GET /v1/intel/agent/{agent_id}.
+  description: "Objective, counts-only signals for one ERC-8004 agent.\n\nArgs (BOTH OPTIONAL — call with\
+    \ `{}` to see Agent Zero itself):\n    chain: one of \"base\", \"ethereum\". Default: \"base\".\n\
+    \    agent_id: the numeric ERC-8004 agent id. Default: 19353 (Agent Zero, the agent serving this MCP\
+    \ endpoint).\nExample: `{}` returns Agent Zero on base; `{\"chain\": \"base\", \"agent_id\": 19353}`\
+    \ is the explicit form.\n\nReturns reachability, TLS validity, x402 support, payments-received (boolean\
+    \ only), MCP tool count, OpenAPI method count, well-known presence, owner-named (boolean), and a neutral\
+    \ status label (Live & monetized / Live, no payments / Stub or unreachable). No owner identity string\
+    \ and no payment amounts — those are paid. Returns an `error` field if the agent is not indexed. Use\
+    \ this to vet a counterparty agent before transacting.\n\nPaid counterpart: `GET /v1/intel/agent/{agent_id}?chain={chain}`\
+    \ (x402, USDC on base-mainnet) unlocks trust_verdict (safe_to_transact / caution / avoid / insufficient_data),\
+    \ readiness_score, Sybil-adjusted reputation, and the commerce-backed breakdown — the decision-driving\
+    \ values this free response returns as `null` inside a `locked` map. Every response carries an `unlock`\
+    \ block with the exact paid endpoint, price, and payment discovery."
   input:
     chain: string — "base" | "ethereum"
     agent_id: integer
 - name: get_network_teaser
-  description: A capped teaser of the on-chain agent-to-agent payment graph (nodes + edges). Paid counterpart
-    GET /v1/intel/graph.
+  description: 'A capped teaser of the on-chain agent-to-agent payment graph.
+
+
+    Returns connected agents (nodes) and the value flowing between them (edges), capped to a small connected
+    sample (≤200 nodes). This is a truncated preview, not the full network. Use it to see who pays whom
+    in the agent economy.
+
+
+    Paid counterpart: `GET /v1/intel/graph` (x402, USDC on base-mainnet) returns the full agent-to-agent
+    payment graph — every node and edge with USDC/ETH amounts and no node cap. Every response from this
+    free tool carries an `unlock` block with the exact paid endpoint, price, and payment discovery.'
   input: {}
+- name: agent_trust_teaser
+  description: "Credit-score-style TEASER for one ERC-8004 agent's trust profile.\n\nArgs (BOTH OPTIONAL\
+    \ — call with `{}` to see Agent Zero itself):\n    chain: one of \"base\", \"ethereum\". Default:\
+    \ \"base\".\n    agent_id: the numeric ERC-8004 agent id. Default: 19353 (Agent Zero, the agent serving\
+    \ this MCP endpoint).\nExample: `{}` returns Agent Zero on base; `{\"chain\": \"base\", \"agent_id\"\
+    : 19353}` is the explicit form.\n\nBy construction returns ONLY: name, chain, agent_id, public readiness_bucket,\
+    \ and a 1-line verdict headline. Every decision-driving value — trust_verdict, readiness_score, risk_flags,\
+    \ money-flow details, counterparty list, full score breakdown — is redacted as `null` and enumerated\
+    \ in the `locked` map. The response carries the exact paid endpoint URL (/v1/intel/agent/{agent_id}?chain={chain}),\
+    \ the x402 price as currently configured, and a one-line how-to-pay-via-x402 hint. Returns `error`\
+    \ with the same unlock pointer if the agent is not indexed, so a caller probing an unknown id still\
+    \ sees how to pay for a known one.\n\nPaid counterpart: `GET /v1/intel/agent/{agent_id}?chain={chain}`\
+    \ (x402, USDC on base-mainnet) returns the full trust verdict (safe_to_transact / caution / avoid\
+    \ / insufficient_data), readiness_score + sub-scores, Sybil-adjusted reputation, and the commerce-backed\
+    \ money-flow breakdown. Every response from this free tool carries an `unlock` + `paid_upgrade` block\
+    \ with the exact paid endpoint, price, and payment discovery."
+- name: list_payable_x402_endpoints
+  description: "Directory of ERC-8004 agents that answered a well-formed HTTP 402 x402 challenge during\
+    \ our last field probe. OBSERVATION ONLY — not a score, ranking, or endorsement.\n\nArgs (ALL OPTIONAL\
+    \ — call with `{}` for the top 10 across both chains):\n    chain: one of \"base\", \"ethereum\" (omit\
+    \ for both). Default: null.\n    limit: 1..10 rows (free-tier cap). Default: 10.\nReturns per-row\
+    \ raw probe facts: agent_id, chain, endpoint_url, http_402_ok, network, asset, price_usd as the challenge\
+    \ advertised, payTo_present (boolean — the actual address is paid), sibling_agent_ids (other ERC-8004\
+    \ ids served by the same gateway row — the 'shared operator' cue), probed_at. Plus `total_endpoints_valid_402`\
+    \ and `total_agents_valid_402` so a caller can see what fraction of the surface this free slice covers.\n\
+    \nSource: the 0946 field-test one-shot probe (unauthenticated, read-only, no payment signed). See\
+    \ the `field_test_url` field for the full writeup.\n\nPaid counterpart: the paid x402 /v1/intel/*\
+    \ endpoints return the same-origin enriched intel on any single agent in this list — owner identity,\
+    \ payment history, peers, trust verdict, Sybil-adjusted reputation. Every response from this free\
+    \ tool carries an `unlock` + `paid_upgrade` block with the exact paid endpoint, price, and payment\
+    \ discovery."
 x-evidence:
   initialize:
     http_status: 200
@@ -106,3 +179,4 @@ tool_quality:
   scored: false
   note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
     from Glimind's agent-readiness audit.
+tools_count: 6
